@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Дифференциалдық модельдер — Финалдық версия</title>
-
   <!-- Chart.js and MathJax (only once each) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -17,7 +16,6 @@
       }
     };
   </script>
-
   <style>
     /* Unified styling with white background */
     body {
@@ -41,7 +39,6 @@
     }
     .header h1 { font-size: 2rem; margin: 0 0 6px; text-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
     .header p { margin: 0 0 14px; opacity: .95; }
-
     .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -66,17 +63,14 @@
       color: white;
     }
     .tab:hover:not(.active) { background: #dee2e6; }
-
     .content {
       background: white;
       border-radius: 0 0 12px 12px;
       padding: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-
     .formula-section { display: none; }
     .formula-section.active { display: block; }
-
     .formula-card {
       background: #f8f9fa;
       border-radius: 10px;
@@ -87,15 +81,13 @@
     .formula-title { font-size: 1.2rem; font-weight: 700; color: #667eea; margin-bottom: 8px; }
     .formula-pair {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 20px;
     }
-
     .controls { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
     .control-group { display: flex; align-items: center; gap: 8px; }
     .control-group label { font-weight: 600; color: #495057; }
     .control-group input { padding: 8px 10px; border: 2px solid #e9ecef; border-radius: 6px; width: 90px; }
-
     .btn {
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
@@ -105,7 +97,6 @@
       cursor: pointer;
       font-weight: 600;
     }
-
     .chart-container {
       background: white;
       border-radius: 10px;
@@ -113,7 +104,6 @@
       margin-top: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
-
     @media (max-width: 820px) {
       .tabs { flex-direction: column; }
       .controls { flex-direction: column; align-items: stretch; }
@@ -122,24 +112,20 @@
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <div class="header">
       <h1>Дифференциалдық модельдер</h1>
     </div>
-
     <div class="tabs" role="tablist" aria-label="Models tabs">
       <button class="tab active" onclick="showTab('physics')">Гармоникалық тербеліс</button>
       <button class="tab" onclick="showTab('seismograph')">Сейсмограф моделі</button>
-      <button class="tab" onclick="showTab('magnitude')">Магнитуда формуласы</button>
       <button class="tab" onclick="showTab('biology')">Популяция</button>
       <button class="tab" onclick="showTab('geography')">Үздіксіз пайыздар</button>
       <button class="tab" onclick="showTab('chemistry')">Екінші ретті реакция</button>
       <button class="tab" onclick="showTab('temperature')">Температура</button>
       <button class="tab" onclick="showTab('pollution')">Ластану</button>
     </div>
-
     <div class="content">
       <!-- PHYSICS (Harmonic from original seismograph) -->
       <section id="physics" class="formula-section active" aria-labelledby="Физика">
@@ -147,7 +133,7 @@
           <div class="formula-title">Гармоникалық тербеліс</div>
           <div class="formula-pair">
             <p>Дифференциалдық теңдеу: \[ \frac{d^2x}{dt^2} + \omega^2 x = 0 \]</p>
-            <p>Қарапайым формула (аналитикалық шешім): \[ x(t) = A \sin(2\pi f t) \]</p>
+            <p>Қарапайым формула: \[ x(t) = A \sin(2\pi f t) \]</p>
           </div>
         </div>
         <div class="controls">
@@ -158,49 +144,30 @@
         </div>
         <div class="chart-container"><canvas id="physicsChart"></canvas></div>
       </section>
-
-      <!-- SEISMOGRAPH (Integrated from seismograph code) -->
+      <!-- SEISMOGRAPH (Integrated with magnitude) -->
       <section id="seismograph" class="formula-section" aria-labelledby="Сейсмограф">
         <div class="formula-card">
-          <div class="formula-title">Сейсмограф моделі</div>
+          <div class="formula-title">Сейсмограф моделі және Магнитуда формуласы</div>
           <div class="formula-pair">
             <p>Дифференциалдық теңдеу: \[ m \frac{d^2x}{dt^2} + c \frac{dx}{dt} + k x = -m \frac{d^2y}{dt^2} \]</p>
-            <p>Қарапайым формула (жуықтау): x(t) ≈ y(t) for low frequencies (but numerical here)</p>
+            <p>Қарапайым формула (Магнитуда): \[ M = \log_{10}(A) + 3.0 + 1.66 \log_{10}(d) \]</p>
           </div>
         </div>
         <div class="controls">
           <div class="control-group"><label for="s-mass">Масса m (кг):</label><input id="s-mass" type="number" value="10" step="1"></div>
           <div class="control-group"><label for="s-stiffness">Қатаңдық k (Н/м):</label><input id="s-stiffness" type="number" value="10000" step="100"></div>
           <div class="control-group"><label for="s-damping">Демпфирлеу c (Н·с/м):</label><input id="s-damping" type="number" value="200" step="10"></div>
-          <div class="control-group"><label for="s-impulse-amp">Импульс амплитудасы A (м/с²):</label><input id="s-impulse-amp" type="number" value="0.1" step="0.01"></div>
-          <div class="control-group"><label for="s-impulse-freq">Импульс жиілігі f (Гц):</label><input id="s-impulse-freq" type="number" value="1" step="0.1"></div>
-          <div class="control-group"><label for="s-decay">Сөну коэффициенті α (1/с):</label><input id="s-decay" type="number" value="0.8" step="0.1"></div>
-          <div class="control-group"><label for="s-tmax">Уақыт t_max (с):</label><input id="s-tmax" type="number" value="20" step="1"></div>
+          <div class="control-group"><label for="s-magnitude">Магнитуда M:</label><input id="s-magnitude" type="number" value="5" step="0.1"></div>
+          <div class="control-group"><label for="s-distance">Қашықтық d (км):</label><input id="s-distance" type="number" value="100" step="1"></div>
+          <div class="control-group"><label for="s-depth">Тереңдік h (км):</label><input id="s-depth" type="number" value="10" step="1"></div>
+          <div class="control-group"><label for="s-impulse-freq">Импульс жиілігі f (Гц):</label><input id="s-impulse-freq" type="number" value="1.5" step="0.1"></div>
+          <div class="control-group"><label for="s-decay">Сөну коэффициенті α (1/с):</label><input id="s-decay" type="number" value="0.3" step="0.1"></div>
+          <div class="control-group"><label for="s-tmax">Уақыт t(с):</label><input id="s-tmax" type="number" value="20" step="1"></div>
           <div class="control-group"><label for="s-dt">Қадам Δt (с):</label><input id="s-dt" type="number" value="0.005" step="0.001"></div>
           <button class="btn" onclick="updateSeismograph()">Графикті жаңарту</button>
         </div>
         <div class="chart-container"><canvas id="seismographChart"></canvas></div>
       </section>
-
-      <!-- MAGNITUDE (Integrated from seismograph code) -->
-      <section id="magnitude" class="formula-section" aria-labelledby="Магнитуда">
-        <div class="formula-card">
-          <div class="formula-title">Магнитуда формуласы</div>
-          <div class="formula-pair">
-            <p>Дифференциалдық теңдеу: (Synthetic based on empirical)</p>
-            <p>Қарапайым формула: \[ M = \log_{10}(A) + 3.0 + 1.66 \log_{10}(d) \]</p>
-          </div>
-        </div>
-        <div class="controls">
-          <div class="control-group"><label for="m-magnitude">Магнитуда M:</label><input id="m-magnitude" type="number" value="5" step="0.1"></div>
-          <div class="control-group"><label for="m-distance">Қашықтық d (км):</label><input id="m-distance" type="number" value="100" step="1"></div>
-          <div class="control-group"><label for="m-depth">Тереңдік h (км):</label><input id="m-depth" type="number" value="10" step="1"></div>
-          <div class="control-group"><label for="m-tmax">Уақыт t_max (с):</label><input id="m-tmax" type="number" value="15" step="1"></div>
-          <button class="btn" onclick="updateMagnitude()">Графикті жаңарту</button>
-        </div>
-        <div class="chart-container"><canvas id="magnitudeChart"></canvas></div>
-      </section>
-
       <!-- BIOLOGY -->
       <section id="biology" class="formula-section" aria-labelledby="Биология">
         <div class="formula-card">
@@ -219,7 +186,6 @@
         </div>
         <div class="chart-container"><canvas id="biologyChart"></canvas></div>
       </section>
-
       <!-- GEOGRAPHY -->
       <section id="geography" class="formula-section" aria-labelledby="География">
         <div class="formula-card">
@@ -238,7 +204,6 @@
         </div>
         <div class="chart-container"><canvas id="geoChart"></canvas></div>
       </section>
-
       <!-- CHEMISTRY -->
       <section id="chemistry" class="formula-section" aria-labelledby="Химия">
         <div class="formula-card">
@@ -256,7 +221,6 @@
         </div>
         <div class="chart-container"><canvas id="chemChart"></canvas></div>
       </section>
-
       <!-- TEMPERATURE -->
       <section id="temperature" class="formula-section" aria-labelledby="Температура">
         <div class="formula-card">
@@ -274,7 +238,6 @@
         </div>
         <div class="chart-container"><canvas id="tempChart"></canvas></div>
       </section>
-
       <!-- POLLUTION -->
       <section id="pollution" class="formula-section" aria-labelledby="Ластану">
         <div class="formula-card">
@@ -295,7 +258,6 @@
       </section>
     </div>
   </div>
-
   <script>
     // showTab: switch visible section and update charts if needed
     function showTab(id) {
@@ -303,12 +265,10 @@
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelector('.tab[onclick*="' + id + '"]').classList.add('active');
       document.getElementById(id).classList.add('active');
-
       // After switching, request chart update for that section
       switch (id) {
         case 'physics': updatePhysics(); break;
         case 'seismograph': updateSeismograph(); break;
-        case 'magnitude': updateMagnitude(); break;
         case 'biology': updateBiology(); break;
         case 'geography': updateGeography(); break;
         case 'chemistry': updateChemistry(); break;
@@ -316,10 +276,8 @@
         case 'pollution': updatePollution(); break;
       }
     }
-
     // Shared charts object
     const charts = {};
-
     // Runge-Kutta 4th order (from seismograph code)
     function rungeKutta4(m, c, k, groundAccel, dt, tMax) {
       const n = Math.floor(tMax / dt);
@@ -327,51 +285,41 @@
       const x = [];
       const groundDisp = [];
       let state = [0, 0]; // [position, velocity]
-
       function derivatives(state, ti) {
         const [pos, vel] = state;
         const aGround = groundAccel(ti);
         const accel = (-c * vel - k * pos - m * aGround) / m;
         return [vel, accel];
       }
-
       for (let i = 0; i <= n; i++) {
         const ti = i * dt;
         t.push(ti);
         x.push(state[0]);
         groundDisp.push(groundAccel(ti) / 100); // Scale
-
         const k1 = derivatives(state, ti);
         const k2 = derivatives([state[0] + dt/2 * k1[0], state[1] + dt/2 * k1[1]], ti + dt/2);
         const k3 = derivatives([state[0] + dt/2 * k2[0], state[1] + dt/2 * k2[1]], ti + dt/2);
         const k4 = derivatives([state[0] + dt * k3[0], state[1] + dt * k3[1]], ti + dt);
-
         state = [
           state[0] + dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]),
           state[1] + dt/6 * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1])
         ];
       }
-
       return { t, x, groundDisp };
     }
-
     /* ---------------- PHYSICS (Harmonic) ---------------- */
     function updatePhysics() {
       const A = parseFloat(document.getElementById('h-amplitude').value);
       const f = parseFloat(document.getElementById('h-frequency').value);
       const tMax = parseFloat(document.getElementById('h-tmax').value);
       const dt = 0.01;
-
       const timePoints = [];
       const analyticalX = [];
-
       for (let t = 0; t <= tMax + 1e-9; t += dt) {
         timePoints.push(t.toFixed(2));
         analyticalX.push(A * Math.sin(2 * Math.PI * f * t));
       }
-
       if (charts.physics) charts.physics.destroy();
-
       const ctx = document.getElementById('physicsChart').getContext('2d');
       charts.physics = new Chart(ctx, {
         type: 'line',
@@ -391,48 +339,45 @@
         }
       });
     }
-
-    /* ---------------- SEISMOGRAPH ---------------- */
+    /* ---------------- SEISMOGRAPH (with integrated magnitude) ---------------- */
     function updateSeismograph() {
       const m = parseFloat(document.getElementById('s-mass').value);
       const k = parseFloat(document.getElementById('s-stiffness').value);
       const c = parseFloat(document.getElementById('s-damping').value);
-      const Ag = parseFloat(document.getElementById('s-impulse-amp').value);
+      const M = parseFloat(document.getElementById('s-magnitude').value);
+      const d = parseFloat(document.getElementById('s-distance').value);
+      // const h = parseFloat(document.getElementById('s-depth').value); // Not used in formula
       const fg = parseFloat(document.getElementById('s-impulse-freq').value);
       const alpha = parseFloat(document.getElementById('s-decay').value);
       const tMax = parseFloat(document.getElementById('s-tmax').value);
       const dt = parseFloat(document.getElementById('s-dt').value);
-
+      const logA = M - 3.0 - 1.66 * Math.log10(d);
+      const Ag = Math.pow(10, logA);
       const groundAccel = (ti) => Ag * Math.exp(-alpha * ti) * Math.sin(2 * Math.PI * fg * ti);
-
       const result = rungeKutta4(m, c, k, groundAccel, dt, tMax);
-
       const step = Math.max(1, Math.floor(result.t.length / 2000));
       const timePoints = [];
       const groundData = [];
       const seismoData = [];
-
       for (let i = 0; i < result.t.length; i += step) {
         timePoints.push(result.t[i].toFixed(2));
         groundData.push(result.groundDisp[i] * 1000);
         seismoData.push(result.x[i] * 1000);
       }
-
       if (charts.seismograph) charts.seismograph.destroy();
-
       const ctx = document.getElementById('seismographChart').getContext('2d');
       charts.seismograph = new Chart(ctx, {
         type: 'line',
         data: {
           labels: timePoints,
           datasets: [
-            { label: 'y(t) — жер қозғалысы', data: groundData, borderWidth: 2, borderColor: 'blue' },
-            { label: 'x(t) — сейсмограф жазбасы', data: seismoData, borderWidth: 2, borderColor: 'red', borderDash: [5, 5] }
+            { label: 'y(t) — жер қозғалысы (қарапайым магнитуда моделі)', data: groundData, borderWidth: 2, borderColor: 'blue' },
+            { label: 'x(t) — сейсмограф жазбасы (дифференциалдық теңдеу)', data: seismoData, borderWidth: 2, borderColor: 'red', borderDash: [5, 5] }
           ]
         },
         options: {
           responsive: true,
-          plugins: { title: { display: true, text: 'Сейсмограф моделі' } },
+          plugins: { title: { display: true, text: 'Сейсмограф және Магнитуда моделі (қарапайым vs дифференциалдық)' } },
           scales: {
             x: { title: { display: true, text: 'Уақыт (с)' } },
             y: { title: { display: true, text: 'Ауытқу (мм)' } }
@@ -440,73 +385,26 @@
         }
       });
     }
-
-    /* ---------------- MAGNITUDE ---------------- */
-    function updateMagnitude() {
-      const M = parseFloat(document.getElementById('m-magnitude').value);
-      const d = parseFloat(document.getElementById('m-distance').value);
-      const tMax = parseFloat(document.getElementById('m-tmax').value);
-
-      const logA = M - 3.0 - 1.66 * Math.log10(d);
-      const Amax = Math.pow(10, logA);
-      const dt = 0.02;
-
-      const timePoints = [];
-      const signalData = [];
-
-      for (let t = 0; t <= tMax + 1e-9; t += dt) {
-        timePoints.push(t.toFixed(2));
-        const signal = Amax * Math.exp(-0.3 * t) * Math.sin(2 * Math.PI * 1.5 * t);
-        signalData.push(signal * 1000);
-      }
-
-      if (charts.magnitude) charts.magnitude.destroy();
-
-      const ctx = document.getElementById('magnitudeChart').getContext('2d');
-      charts.magnitude = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: timePoints,
-          datasets: [
-            { label: `A(t) = ${Amax.toExponential(2)}·e^(-0.3t)·sin(2π·1.5t)`, data: signalData, borderWidth: 2, borderColor: 'blue' }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { title: { display: true, text: 'Магнитуда формуласы' } },
-          scales: {
-            x: { title: { display: true, text: 'Уақыт (с)' } },
-            y: { title: { display: true, text: 'Ауытқу (мм)' } }
-          }
-        }
-      });
-    }
-
     /* ---------------- BIOLOGY ---------------- */
     function updateBiology() {
       const r = parseFloat(document.getElementById('r-bio').value);
       const K = parseFloat(document.getElementById('K-bio').value);
       const N0 = parseFloat(document.getElementById('N0-bio').value);
       const dt = parseFloat(document.getElementById('dt-bio').value);
-
       const tMax = 50;
       const timePoints = [];
       const analyticalN = [];
       const numericalN = [];
       let N = N0;
-
       for (let t = 0; t <= tMax + 1e-9; t += dt) {
         timePoints.push(t.toFixed(1));
         const expTerm = Math.exp(r * t);
         analyticalN.push((K * N0 * expTerm) / (K + N0 * (expTerm - 1)));
-
         const dN = r * N * (1 - N / K);
         N += dN * dt;
         numericalN.push(N);
       }
-
       if (charts.biology) charts.biology.destroy();
-
       const ctx = document.getElementById('biologyChart').getContext('2d');
       charts.biology = new Chart(ctx, {
         type: 'line',
@@ -527,29 +425,24 @@
         }
       });
     }
-
     /* ---------------- GEOGRAPHY ---------------- */
     function updateGeography() {
       const P0 = parseFloat(document.getElementById('P0-econ').value);
       const rPercent = parseFloat(document.getElementById('r-econ').value);
       const years = parseFloat(document.getElementById('years-econ').value);
       const dt = parseFloat(document.getElementById('dt-geo').value);
-
       const r = rPercent / 100;
       const timePoints = [];
       const analyticalP = [];
       const numericalP = [];
       let P = P0;
-
       for (let t = 0; t <= years + 1e-9; t += dt) {
         timePoints.push(t.toFixed(1));
         analyticalP.push(P0 * Math.exp(r * t));
-
         const dP = r * P;
         P += dP * dt;
         numericalP.push(P);
       }
-
       if (charts.geo) charts.geo.destroy();
       const ctx = document.getElementById('geoChart').getContext('2d');
       charts.geo = new Chart(ctx, {
@@ -568,28 +461,23 @@
         }
       });
     }
-
     /* ---------------- CHEMISTRY ---------------- */
     function updateChemistry() {
       const k = parseFloat(document.getElementById('k-chem').value);
       const A0 = parseFloat(document.getElementById('A0-chem').value);
       const dt = parseFloat(document.getElementById('dt-chem').value);
-
       const tMax = 50;
       const timePoints = [];
       const analyticalA = [];
       const numericalA = [];
       let A = A0;
-
       for (let t = 0; t <= tMax + 1e-9; t += dt) {
         timePoints.push(t.toFixed(1));
         analyticalA.push(1 / (2 * k * t + 1 / A0));
-
         const dA = -2 * k * A * A;
         A += dA * dt;
         numericalA.push(A);
       }
-
       if (charts.chem) charts.chem.destroy();
       const ctx = document.getElementById('chemChart').getContext('2d');
       charts.chem = new Chart(ctx, {
@@ -608,13 +496,11 @@
         }
       });
     }
-
     /* ---------------- TEMPERATURE ---------------- */
     function updateTemperature() {
       const alpha = parseFloat(document.getElementById('alpha').value);
       const dx = parseFloat(document.getElementById('dx-temp').value);
       const dt = parseFloat(document.getElementById('dt-temp').value);
-
       const nx = 30;
       const Tb = 20;
       const impulse = 100 - Tb;
@@ -624,14 +510,12 @@
       T[Math.floor(nx / 2)] = 100;
       const timeSteps = 80;
       const t = timeSteps * dt;
-
       for (let n = 0; n < timeSteps; n++) {
         const Tn = T.slice();
         for (let i = 1; i < nx - 1; i++) {
           T[i] = Tn[i] + alpha * dt / (dx * dx) * (Tn[i + 1] - 2 * Tn[i] + Tn[i - 1]);
         }
       }
-
       const xPoints = [];
       const analyticalT = [];
       for (let i = 0; i < nx; i++) {
@@ -643,7 +527,6 @@
           analyticalT.push(Tb);
         }
       }
-
       if (charts.temp) charts.temp.destroy();
       const ctx = document.getElementById('tempChart').getContext('2d');
       charts.temp = new Chart(ctx, {
@@ -665,14 +548,12 @@
         }
       });
     }
-
     /* ---------------- POLLUTION ---------------- */
     function updatePollution() {
       const D = parseFloat(document.getElementById('D').value);
       const v = parseFloat(document.getElementById('v').value);
       const dx = parseFloat(document.getElementById('dx-poll').value);
       const dt = parseFloat(document.getElementById('dt-poll').value);
-
       const nx = 30;
       const impulse = 10;
       const A = impulse * dx;
@@ -681,7 +562,6 @@
       C[Math.floor(nx / 3)] = impulse;
       const timeSteps = 100;
       const t = timeSteps * dt;
-
       for (let n = 0; n < timeSteps; n++) {
         const Cn = C.slice();
         for (let i = 1; i < nx - 1; i++) {
@@ -690,7 +570,6 @@
           C[i] = Cn[i] + dt * (D * lap - v * adv);
         }
       }
-
       const xPoints = [];
       const analyticalC = [];
       for (let i = 0; i < nx; i++) {
@@ -702,7 +581,6 @@
           analyticalC.push(0);
         }
       }
-
       if (charts.pollution) charts.pollution.destroy();
       const ctx = document.getElementById('pollutionChart').getContext('2d');
       charts.pollution = new Chart(ctx, {
@@ -724,7 +602,6 @@
         }
       });
     }
-
     // Initialize first visible tab charts on load
     window.addEventListener('load', () => {
       updatePhysics();
