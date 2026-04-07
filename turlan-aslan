@@ -36,7 +36,6 @@
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #ecf0f1; }
     ::-webkit-scrollbar-thumb { background: #95a5a6; border-radius: 4px; }
-    /* Есептер үшін қосымша стильдер */
     .problem-card { transition: all 0.2s ease; }
     .answer-input { transition: all 0.3s ease; }
     .answer-input.correct { background-color: #d1fae5; border-color: #10b981; }
@@ -396,7 +395,6 @@
   </div>
 
   <script>
-    // Navigation Logic
     function navigateTo(page) {
       document.querySelectorAll('.page-section').forEach(section => section.classList.add('hidden'));
       document.getElementById(`page-${page}`).classList.remove('hidden');
@@ -408,7 +406,6 @@
       document.getElementById('mobile-menu').classList.toggle('hidden');
     }
 
-    // ====================== МОДЕЛЬДЕР МЕН ГРАФИКТЕР (С ЕКІ СЫЗЫҚПЕН) ======================
     let currentChart = null;
 
     const modelData = {
@@ -520,7 +517,6 @@
       return params;
     }
 
-    // Здесь генерируются ОБА графика (Дифференциальный и Простой)
     function generateChartData(modelId, params) {
       const t = [];
       const n = 100;
@@ -615,7 +611,6 @@
       if (currentChart) { currentChart.destroy(); currentChart = null; }
     }
 
-    // ====================== ЕСЕПТЕР (ТҮЗЕТІЛГЕН ДИЗАЙН) ======================
     const problemsData = [
       {
         id: "phys1", category: "Физика",
@@ -713,7 +708,6 @@
                     <p class="text-gray-600 text-sm mb-6 leading-relaxed">${problem.statement}</p>
                   </div>
                   
-                  <!-- Изменённый дизайн: поле сверху, кнопки снизу -->
                   <div class="flex flex-col gap-3 mt-auto">
                     <input type="text" id="ans-input-${problem.id}" placeholder="Жауабыңыз (${problem.unit})"
                            class="answer-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium text-center">
