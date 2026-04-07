@@ -1,1108 +1,1597 @@
 <!doctype html>
+
 <html lang="kk" class="h-full">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>DiffEq Hub - Дифференциалдық Модельдер</title>
+
   <script src="https://cdn.tailwindcss.com/3.4.7"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4"></script>
+
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <script src="/_sdk/element_sdk.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+
     * { font-family: 'Inter', 'Arial', 'Helvetica', sans-serif; }
+
     html, body { height: 100%; margin: 0; }
+
     .app-wrapper { height: 100%; width: 100%; overflow-y: auto; overflow-x: hidden; background: #ffffff; }
+
     .gradient-bg { background: linear-gradient(135deg, #2c3e50, #34495e); }
+
     .gradient-text { color: #2c3e50; font-weight: bold; }
+
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; border: 1px solid #d0d0d0; }
+
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-color: #2c3e50; }
+
     .nav-link { transition: color 0.2s ease, background-color 0.2s ease; }
+
     .nav-link:hover { color: #ecf0f1; background-color: rgba(255,255,255,0.1); border-radius: 8px; }
+
     .modal-overlay { background-color: rgba(0, 0, 0, 0.5); }
+
     .fade-in { animation: fadeIn 0.5s ease-in-out; }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     .slide-in { animation: slideIn 0.3s ease-out; }
+
     @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
     .timeline-item { position: relative; padding-left: 30px; }
+
     .timeline-item::before { content: ''; position: absolute; left: 0; top: 8px; width: 12px; height: 12px; border-radius: 50%; background: #2c3e50; }
+
     .timeline-item::after { content: ''; position: absolute; left: 5px; top: 24px; width: 2px; height: calc(100% - 16px); background: #bdc3c7; }
+
     .timeline-item:last-child::after { display: none; }
+
     .btn-gradient { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; transition: background 0.2s ease, transform 0.2s ease; border: none; cursor: pointer; border-radius: 8px; }
+
     .btn-gradient:hover { background: linear-gradient(135deg, #34495e, #2c3e50); transform: translateY(-2px); }
-    .photo-grid img { transition: transform 0.2s ease; }
-    .photo-grid img:hover { transform: scale(1.05); }
+
     ::-webkit-scrollbar { width: 8px; }
+
     ::-webkit-scrollbar-track { background: #ecf0f1; }
+
     ::-webkit-scrollbar-thumb { background: #95a5a6; border-radius: 4px; }
+
+    /* Есептер үшін қосымша стильдер */
+
+    .problem-card { transition: all 0.2s ease; }
+
+    .answer-input { transition: all 0.3s ease; }
+
+    .answer-input.correct { background-color: #d1fae5; border-color: #10b981; }
+
+    .answer-input.wrong { background-color: #fee2e2; border-color: #ef4444; }
+
   </style>
-  <style>body { box-sizing: border-box; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+
 </head>
+
 <body class="h-full bg-white">
+
   <div class="app-wrapper">
+
     <!-- Navigation -->
+
     <nav class="gradient-bg fixed top-0 left-0 right-0 z-50 border-bottom" style="border-bottom: 1px solid #34495e;">
+
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         <div class="flex items-center justify-between h-16">
-          <!-- Logo -->
+
           <a href="#" onclick="navigateTo('home')" class="flex items-center space-x-3 cursor-pointer">
+
             <div class="flex items-center">
+
               <div class="hidden sm:block">
+
                 <span class="text-white font-bold text-lg" id="site-title">DiffEq Hub</span>
+
                 <span class="text-white text-xs block -mt-1" style="opacity: 0.8;">Дифференциалдық Модельдер</span>
+
               </div>
+
             </div>
+
           </a>
-          <!-- Desktop Menu -->
+
           <div class="hidden md:flex items-center space-x-1">
+
             <a href="#" onclick="navigateTo('home')" class="nav-link text-white px-4 py-2 rounded-lg font-medium">Басты бет</a>
+
             <a href="#" onclick="navigateTo('history')" class="nav-link text-white/90 px-4 py-2 rounded-lg font-medium">Тарих</a>
+
             <a href="#" onclick="navigateTo('models')" class="nav-link text-white/90 px-4 py-2 rounded-lg font-medium">Модельдер</a>
+
+            <a href="#" onclick="navigateTo('problems')" class="nav-link text-white/90 px-4 py-2 rounded-lg font-medium">Есептер</a>
+
             <a href="#" onclick="navigateTo('contact')" class="nav-link text-white/90 px-4 py-2 rounded-lg font-medium">Контакт</a>
+
           </div>
-          <!-- Mobile Menu Button -->
+
           <button onclick="toggleMobileMenu()" class="md:hidden text-white p-2">
+
             <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+
             </svg>
+
           </button>
+
         </div>
+
       </div>
-      <!-- Mobile Menu -->
+
       <div id="mobile-menu" class="hidden md:hidden bg-white border-top" style="border-top: 1px solid #d0d0d0;">
+
         <div class="px-4 py-3 space-y-2">
+
           <a href="#" onclick="navigateTo('home'); toggleMobileMenu();" class="block text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100">Басты бет</a>
+
           <a href="#" onclick="navigateTo('history'); toggleMobileMenu();" class="block text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100">Тарих</a>
+
           <a href="#" onclick="navigateTo('models'); toggleMobileMenu();" class="block text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100">Модельдер</a>
+
+          <a href="#" onclick="navigateTo('problems'); toggleMobileMenu();" class="block text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100">Есептер</a>
+
           <a href="#" onclick="navigateTo('contact'); toggleMobileMenu();" class="block text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100">Контакт</a>
+
         </div>
+
       </div>
+
     </nav>
+
+
+
     <!-- Main Content -->
+
     <main class="pt-16">
+
+      
+
       <!-- Home Page -->
+
       <section id="page-home" class="page-section">
-        <!-- Hero Section -->
+
         <div class="gradient-bg relative overflow-hidden" style="background: #2c3e50;">
+
           <div class="absolute inset-0 opacity-5">
+
             <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <defs>
-                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                  <path d="M 10 0 L 0 0 0 10" fill="none" stroke="black" stroke-width="0.5" />
-                </pattern>
-              </defs>
+
+              <defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="black" stroke-width="0.5" /></pattern></defs>
+
               <rect width="100" height="100" fill="url(#grid)" />
+
             </svg>
+
           </div>
+
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 relative">
+
             <div class="text-center fade-in">
+
               <h1 id="hero-title" class="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white mb-10 leading-tight">Дифференциалдық модельдер</h1>
-              <button onclick="navigateTo('models')" class="btn-gradient font-semibold px-8 py-3 rounded text-lg">Модельдерді зерттеу →</button>
+
+              <div class="flex justify-center space-x-4">
+
+                <button onclick="navigateTo('models')" class="btn-gradient font-semibold px-8 py-3 rounded text-lg">Модельдерді зерттеу →</button>
+
+                <button onclick="navigateTo('problems')" class="bg-white/10 text-white border border-white/30 hover:bg-white/20 transition font-semibold px-8 py-3 rounded text-lg">Есептер шығару</button>
+
+              </div>
+
             </div>
+
           </div>
-          <!-- Wave separator -->
+
           <div class="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 100" fill="none" class="w-full">
-              <path d="M0 50 Q360 0 720 50 T1440 50 V100 H0 Z" fill="white" />
-            </svg>
+
+            <svg viewBox="0 0 1440 100" fill="none" class="w-full"><path d="M0 50 Q360 0 720 50 T1440 50 V100 H0 Z" fill="white" /></svg>
+
           </div>
+
         </div>
-        <!-- History Preview Section -->
+
+
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
           <div class="text-center mb-12">
+
             <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">Дифференциалдық теңдеулердің тарихы</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto" style="color: #555;">17 ғасырдан бастап қазіргі күнге дейінгі даму жолы</p>
+
+            <p class="text-gray-600 max-w-2xl mx-auto">17 ғасырдан бастап қазіргі күнге дейінгі даму жолы</p>
+
           </div>
+
           <div class="grid md:grid-cols-2 gap-8 mb-12">
-            <!-- Timeline -->
+
             <div class="bg-white rounded p-8" style="border: 1px solid #d0d0d0;">
+
               <div class="space-y-6">
+
                 <div class="timeline-item pb-6">
+
                   <h3 class="font-bold text-gray-800 mb-2">17 ғасыр - Бастауы</h3>
-                  <p class="text-gray-600 text-sm" style="color: #555;">Дифференциалдық теңдеулер Исаак Ньютон және Готфрид Лейбницпен ойлап табылған. Олар қозғалыс, өсу және өзгерістерді модельдеу үшін қажет болды.</p>
+
+                  <p class="text-gray-600 text-sm">Дифференциалдық теңдеулер Исаак Ньютон және Готфрид Лейбницпен ойлап табылған.</p>
+
                 </div>
+
                 <div class="timeline-item pb-6">
+
                   <h3 class="font-bold text-gray-800 mb-2">Неге ойлап табылды?</h3>
-                  <p class="text-gray-600 text-sm" style="color: #555;">Бұл теңдеулер табиғат құбылыстарын дәл болжау үшін жасалған: планеталар қозғалысы, популяция өсуі, жылу таралуы сияқты.</p>
+
+                  <p class="text-gray-600 text-sm">Бұл теңдеулер табиғат құбылыстарын дәл болжау үшін жасалған: планеталар қозғалысы, популяция өсуі, жылу таралу сияқты.</p>
+
                 </div>
+
                 <div class="timeline-item">
+
                   <h3 class="font-bold text-gray-800 mb-2">Қазіргі қолданысы</h3>
-                  <p class="text-gray-600 text-sm" style="color: #555;">Кейін Эйлер, Лагранж, Фурье дамытты. Қазір инженерлік, экономика, экологияда қолданылады.</p>
+
+                  <p class="text-gray-600 text-sm">Кейін Эйлер, Лагранж, Фурье дамытты. Қазір инженерлік, экономика, экологияда қолданылады.</p>
+
                 </div>
+
               </div>
+
             </div>
-            <!-- Info Cards -->
+
             <div class="space-y-4">
+
               <div class="bg-white rounded p-6" style="border: 1px solid #d0d0d0;">
+
                 <h4 class="font-bold text-gray-800 mb-2">Исаак Ньютон (1643-1727)</h4>
-                <p class="text-gray-600 text-sm" style="color: #555;">Ағылшын физигі. Механика заңдарын сипаттау үшін дифференциалдық есептеуді қолданды.</p>
+
+                <p class="text-gray-600 text-sm">Ағылшын физигі. Механика заңдарын сипаттау үшін дифференциалдық есептеуді қолданды.</p>
+
               </div>
+
               <div class="bg-white rounded p-6" style="border: 1px solid #d0d0d0;">
+
                 <h4 class="font-bold text-gray-800 mb-2">Готфрид Лейбниц (1646-1716)</h4>
-                <p class="text-gray-600 text-sm" style="color: #555;">Неміс философы. Қазіргі дифференциалдық белгілеуді (dx, dy, ∫) ойлап тапты.</p>
+
+                <p class="text-gray-600 text-sm">Неміс философы. Қазіргі дифференциалдық белгілеуді (dx, dy, ∫) ойлап тапты.</p>
+
               </div>
-              <div class="bg-white rounded p-6" style="border: 1px solid #d0d0d0;">
-                <h4 class="font-bold text-gray-800 mb-2">Қазіргі қолданыс</h4>
-                <p class="text-gray-600 text-sm" style="color: #555;">Ғарыш саласы, медицина, климаттану, қаржы, және экология.</p>
-              </div>
+
             </div>
+
           </div>
+
           <div class="text-center">
-            <button onclick="navigateTo('history')" class="text-blue-600 font-semibold hover:text-blue-800 transition-colors" style="color: #2c3e50;"> Толық тарихты оқу → </button>
+
+            <button onclick="navigateTo('history')" class="text-blue-600 font-semibold hover:text-blue-800 transition-colors"> Толық тарихты оқу → </button>
+
           </div>
+
         </div>
-        <!-- Models Preview -->
-        <div class="bg-gray-100 py-16">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-              <h2 class="text-3xl md:text-4xl font-bold gradient-text mb-4">Математикалық модельдер</h2>
-              <p class="text-gray-600 max-w-2xl mx-auto" style="color: #555;">Әртүрлі салалардағы дифференциалдық теңдеулердің қолданылуы</p>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Model Card 1 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('harmonic')">
-                <div class="h-40 gradient-bg flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <path d="M10 50 Q35 10, 60 50 T110 50 T160 50 T190 50" stroke="white" stroke-width="3" fill="none" opacity="0.9" />
-                    <circle cx="60" cy="50" r="4" fill="white" />
-                    <circle cx="110" cy="50" r="4" fill="white" />
-                    <circle cx="160" cy="50" r="4" fill="white" />
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Гармоникалық тербеліс</h3>
-                  <p class="text-gray-600 text-sm mb-4">Физикадағы тербелмелі жүйелерді сипаттайтын модель</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <!-- Model Card 2 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('seismograph')">
-                <div class="h-40 bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <path d="M10 50 L30 50 L35 30 L45 70 L55 20 L65 80 L75 40 L85 60 L95 45 L105 55 L190 50" stroke="white" stroke-width="2" fill="none" />
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Сейсмограф моделі</h3>
-                  <p class="text-gray-600 text-sm mb-4">Жер сілкінісін өлшеу және талдау моделі</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <!-- Model Card 3 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('population')">
-                <div class="h-40 bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <path d="M10 90 Q50 85, 80 70 T130 30 T180 15 L180 15" stroke="white" stroke-width="3" fill="none" />
-                    <line x1="10" y1="15" x2="10" y2="90" stroke="white" stroke-width="1" opacity="0.5" />
-                    <line x1="10" y1="90" x2="190" y2="90" stroke="white" stroke-width="1" opacity="0.5" />
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Популяция өсуі</h3>
-                  <p class="text-gray-600 text-sm mb-4">Логистикалық өсу теңдеуі (S-қисық)</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <!-- Model Card 4 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('interest')">
-                <div class="h-40 bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <path d="M10 85 Q40 80, 70 65 Q100 45, 130 25 Q160 10, 190 5" stroke="white" stroke-width="3" fill="none" />
-                    <text x="150" y="70" fill="white" font-size="24" font-weight="bold">$</text>
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Үздіксіз пайыздар</h3>
-                  <p class="text-gray-600 text-sm mb-4">Экспоненциалды өсу - қаржы саласы</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <!-- Model Card 5 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('temperature')">
-                <div class="h-40 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <defs>
-                      <linearGradient id="heatGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#ff6b6b" />
-                        <stop offset="100%" style="stop-color:#4ecdc4" />
-                      </linearGradient>
-                    </defs>
-                    <rect x="20" y="30" width="160" height="40" rx="5" fill="url(#heatGrad)" opacity="0.8" />
-                    <text x="85" y="55" fill="white" font-size="12">T(x,t)</text>
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Жылу таралуы</h3>
-                  <p class="text-gray-600 text-sm mb-4">Температураның кеңістікте таралу моделі</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-              <!-- Model Card 6 -->
-              <div class="card-hover bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer" onclick="openModel('pollution')">
-                <div class="h-40 bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
-                  <svg viewBox="0 0 200 100" class="w-4/5">
-                    <circle cx="100" cy="50" r="15" fill="white" opacity="0.9" />
-                    <circle cx="100" cy="50" r="25" fill="white" opacity="0.5" />
-                    <circle cx="100" cy="50" r="35" fill="white" opacity="0.3" />
-                    <circle cx="100" cy="50" r="45" fill="white" opacity="0.1" />
-                  </svg>
-                </div>
-                <div class="p-6">
-                  <h3 class="font-bold text-xl text-gray-800 mb-2">Ластану таралуы</h3>
-                  <p class="text-gray-600 text-sm mb-4">Диффузия теңдеуі - экология саласы</p>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </section>
+
+
+
       <!-- History Page -->
+
       <section id="page-history" class="page-section hidden">
+
         <div class="gradient-bg py-16">
+
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Дифференциалдық теңдеулердің тарихы</h1>
+
             <p class="text-white/80">17 ғасырдан бастап қазіргі күнге дейін</p>
+
           </div>
+
         </div>
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <!-- Founders Section -->
+
           <div class="mb-16">
+
             <h2 class="text-2xl font-bold gradient-text mb-8 text-center">Негізін қалаушылар</h2>
+
             <div class="grid md:grid-cols-2 gap-8">
+
               <div class="bg-white rounded-2xl shadow-xl p-8 fade-in">
+
                 <div class="flex items-start space-x-6">
+
                   <div class="w-24 h-24 rounded-full gradient-bg flex items-center justify-center flex-shrink-0"><span class="text-4xl">🍎</span></div>
+
                   <div>
+
                     <h3 class="text-xl font-bold text-gray-800 mb-2">Исаак Ньютон (1643-1727)</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Ағылшын физигі және математигі. Механика заңдарын сипаттау үшін дифференциалдық есептеуді қолданды. "Флюксиялар әдісі" деп атаған жүйесін жасады. Гравитация заңы мен қозғалыс заңдарын дифференциалдық теңдеулер арқылы тұжырымдады.</p>
+
+                    <p class="text-gray-600 text-sm leading-relaxed">Механика заңдарын сипаттау үшін дифференциалдық есептеуді қолданды. "Флюксиялар әдісі" деп атаған жүйесін жасады.</p>
+
                   </div>
+
                 </div>
+
               </div>
+
               <div class="bg-white rounded-2xl shadow-xl p-8 fade-in">
+
                 <div class="flex items-start space-x-6">
+
                   <div class="w-24 h-24 rounded-full gradient-bg flex items-center justify-center flex-shrink-0"><span class="text-4xl font-bold text-white">∫</span></div>
+
                   <div>
+
                     <h3 class="text-xl font-bold text-gray-800 mb-2">Готфрид Лейбниц (1646-1716)</h3>
-                    <p class="text-gray-600 text-sm leading-relaxed">Неміс философы және математигі. Қазіргі дифференциалдық белгілеуді (dx, dy, ∫) ойлап тапты. Математикалық талдаудың негізін қалады. Ньютонмен бір уақытта, бірақ тәуелсіз түрде дифференциалдық есептеуді дамытты.</p>
+
+                    <p class="text-gray-600 text-sm leading-relaxed">Қазіргі дифференциалдық белгілеуді (dx, dy, ∫) ойлап тапты. Математикалық талдаудың негізін қалады.</p>
+
                   </div>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
-          <!-- Timeline Section -->
+
           <div class="mb-16">
+
             <h2 class="text-2xl font-bold gradient-text mb-8 text-center">Даму кезеңдері</h2>
+
             <div class="bg-white rounded-2xl shadow-xl p-8">
+
               <div class="space-y-8">
+
                 <div class="timeline-item pb-8">
-                  <div class="flex items-center mb-2"><span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">1665-1676</span></div>
-                  <h3 class="font-bold text-gray-800 mb-2">Негіздің қалануы</h3>
-                  <p class="text-gray-600">Ньютон мен Лейбниц дифференциалдық және интегралдық есептеуді дербес түрде жасады. Бұл кезең "Математиканың алтын ғасыры" деп аталады.</p>
+
+                  <h3 class="font-bold text-gray-800 mb-2">Негіздің қалануы (1665-1676)</h3>
+
+                  <p class="text-gray-600">Ньютон мен Лейбниц дифференциалдық және интегралдық есептеуді дербес түрде жасады.</p>
+
                 </div>
+
                 <div class="timeline-item pb-8">
-                  <div class="flex items-center mb-2"><span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">18 ғасыр</span></div>
-                  <h3 class="font-bold text-gray-800 mb-2">Эйлер мен Лагранж дәуірі</h3>
-                  <p class="text-gray-600">Леонард Эйлер дифференциалдық теңдеулерді шешудің көптеген әдістерін жасады. Жозеф-Луи Лагранж вариациялық есептеуді дамытты. Бұл кезеңде механика мен физикада кең қолданыс тапты.</p>
+
+                  <h3 class="font-bold text-gray-800 mb-2">Эйлер мен Лагранж дәуірі (18 ғасыр)</h3>
+
+                  <p class="text-gray-600">Леонард Эйлер мен Жозеф-Луи Лагранж шешудің көптеген әдістерін жасады.</p>
+
                 </div>
-                <div class="timeline-item pb-8">
-                  <div class="flex items-center mb-2"><span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">19 ғасыр</span></div>
-                  <h3 class="font-bold text-gray-800 mb-2">Фурье және жылу теңдеуі</h3>
-                  <p class="text-gray-600">Жозеф Фурье жылу таралуының дифференциалдық теңдеуін және оны шешудің Фурье қатарлары әдісін ұсынды. Бұл сигналдарды өңдеу теориясының негізі болды.</p>
-                </div>
+
                 <div class="timeline-item">
-                  <div class="flex items-center mb-2"><span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full">20-21 ғасыр</span></div>
-                  <h3 class="font-bold text-gray-800 mb-2">Компьютерлік дәуір</h3>
-                  <p class="text-gray-600">Сандық әдістер мен компьютерлік модельдеу арқылы күрделі дифференциалдық теңдеулерді шешу мүмкін болды. Қазір инженерия, экономика, биология, климаттану және басқа салаларда кеңінен қолданылады.</p>
+
+                  <h3 class="font-bold text-gray-800 mb-2">Фурье және компьютерлік дәуір (19 - 21 ғасыр)</h3>
+
+                  <p class="text-gray-600">Компьютерлік модельдеу арқылы күрделі дифференциалдық теңдеулерді шешу мүмкін болды.</p>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
-          <!-- Applications Gallery -->
-          <div>
-            <h2 class="text-2xl font-bold gradient-text mb-8 text-center">Қазіргі қолданыс салалары</h2>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 gradient-bg flex items-center justify-center"><span class="text-5xl">🚀</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Ғарыш саласы</h3>
-                  <p class="text-gray-600 text-sm">Ғарыш кемелерінің траекториясын есептеу</p>
-                </div>
-              </div>
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center"><span class="text-5xl">❤️</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Медицина</h3>
-                  <p class="text-gray-600 text-sm">Дәрінің организмдегі таралуы</p>
-                </div>
-              </div>
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center"><span class="text-5xl">🌍</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Климаттану</h3>
-                  <p class="text-gray-600 text-sm">Ауа райын болжау модельдері</p>
-                </div>
-              </div>
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center"><span class="text-5xl">💰</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Қаржы</h3>
-                  <p class="text-gray-600 text-sm">Опциондар бағасын есептеу (Black-Scholes)</p>
-                </div>
-              </div>
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"><span class="text-5xl">🔬</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Биология</h3>
-                  <p class="text-gray-600 text-sm">Эпидемиялық модельдер (SIR)</p>
-                </div>
-              </div>
-              <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
-                <div class="h-32 bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center"><span class="text-5xl">⚡</span></div>
-                <div class="p-4">
-                  <h3 class="font-bold text-gray-800">Электроника</h3>
-                  <p class="text-gray-600 text-sm">Электр тізбектерін талдау</p>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
+
       </section>
+
+
+
       <!-- Models Page -->
+
       <section id="page-models" class="page-section hidden">
+
         <div class="gradient-bg py-16">
+
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Математикалық модельдер</h1>
+
             <p class="text-white/80">Интерактивті графиктер мен симуляциялар</p>
+
           </div>
+
         </div>
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Model Card 1 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('harmonic')">
+
               <div class="h-48 gradient-bg flex items-center justify-center relative">
+
                 <svg viewBox="0 0 200 100" class="w-4/5 absolute">
-                  <path d="M10 50 Q35 10, 60 50 T110 50 T160 50 T190 50" stroke="white" stroke-width="3" fill="none" opacity="0.9">
-                    <animate attributeName="d" values="M10 50 Q35 10, 60 50 T110 50 T160 50 T190 50;M10 50 Q35 90, 60 50 T110 50 T160 50 T190 50;M10 50 Q35 10, 60 50 T110 50 T160 50 T190 50" dur="2s" repeatCount="indefinite" />
-                  </path>
+
+                  <path d="M10 50 Q35 10, 60 50 T110 50 T160 50 T190 50" stroke="white" stroke-width="3" fill="none" opacity="0.9"></path>
+
                 </svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Физика</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Гармоникалық тербеліс</h3>
-                <p class="text-gray-600 text-sm mb-4">Серіппелі жүйелер, маятниктер және толқындардағы тербелмелі қозғалысты сипаттайды.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">y'' + ω²y = 0</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
+                <p class="text-gray-600 text-sm mb-4">Серіппелі жүйелер мен маятниктердегі тербелмелі қозғалыс.</p>
+
               </div>
+
             </div>
-            <!-- Model Card 2 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('seismograph')">
+
               <div class="h-48 bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center relative">
-                <svg viewBox="0 0 200 100" class="w-4/5">
-                  <path d="M10 50 L30 50 L35 30 L45 70 L55 20 L65 80 L75 40 L85 60 L95 45 L105 55 L190 50" stroke="white" stroke-width="2" fill="none">
-                    <animate attributeName="d" values="M10 50 L30 50 L35 30 L45 70 L55 20 L65 80 L75 40 L85 60 L95 45 L105 55 L190 50;M10 50 L30 50 L35 45 L45 55 L55 40 L65 60 L75 48 L85 52 L95 49 L105 51 L190 50;M10 50 L30 50 L35 30 L45 70 L55 20 L65 80 L75 40 L85 60 L95 45 L105 55 L190 50" dur="3s" repeatCount="indefinite" />
-                  </path>
-                </svg>
+
+                <svg viewBox="0 0 200 100" class="w-4/5"><path d="M10 50 L30 50 L35 30 L45 70 L55 20 L65 80 L75 40 L85 60 L95 45 L105 55 L190 50" stroke="white" stroke-width="2" fill="none"></path></svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Сейсмология</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Сейсмограф моделі</h3>
-                <p class="text-gray-600 text-sm mb-4">Жер сілкінісінің магнитудасын өлшеу және толқын таралуын модельдеу.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">M = log₁₀(A/A₀)</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
+                <p class="text-gray-600 text-sm mb-4">Жер сілкінісінің магнитудасын өлшеу және толқын таралуы.</p>
+
               </div>
+
             </div>
-            <!-- Model Card 3 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('population')">
+
               <div class="h-48 bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center relative">
-                <svg viewBox="0 0 200 100" class="w-4/5">
-                  <path d="M10 90 Q30 88, 50 80 Q80 60, 100 40 Q130 20, 160 15 Q180 12, 190 12" stroke="white" stroke-width="3" fill="none" />
-                  <line x1="10" y1="10" x2="10" y2="90" stroke="white" stroke-width="1" opacity="0.5" />
-                  <line x1="10" y1="90" x2="190" y2="90" stroke="white" stroke-width="1" opacity="0.5" />
-                  <text x="180" y="30" fill="white" font-size="10" opacity="0.8">K</text>
-                </svg>
+
+                <svg viewBox="0 0 200 100" class="w-4/5"><path d="M10 90 Q30 88, 50 80 Q80 60, 100 40 Q130 20, 160 15 Q180 12, 190 12" stroke="white" stroke-width="3" fill="none" /></svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Биология</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Популяция өсуі</h3>
-                <p class="text-gray-600 text-sm mb-4">Логистикалық өсу моделі - тірі организмдер популяциясының динамикасы.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">dP/dt = rP(1-P/K)</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
+                <p class="text-gray-600 text-sm mb-4">Логистикалық өсу моделі - популяция динамикасы.</p>
+
               </div>
+
             </div>
-            <!-- Model Card 4 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('interest')">
+
               <div class="h-48 bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center relative">
-                <svg viewBox="0 0 200 100" class="w-4/5">
-                  <path d="M10 85 Q40 75, 70 55 Q100 30, 130 15 Q160 5, 190 2" stroke="white" stroke-width="3" fill="none" />
-                  <text x="150" y="70" fill="white" font-size="30" font-weight="bold" opacity="0.8">$</text>
-                </svg>
+
+                <svg viewBox="0 0 200 100" class="w-4/5"><path d="M10 85 Q40 75, 70 55 Q100 30, 130 15 Q160 5, 190 2" stroke="white" stroke-width="3" fill="none" /><text x="150" y="70" fill="white" font-size="30" font-weight="bold" opacity="0.8">$</text></svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Экономика</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Үздіксіз пайыздар</h3>
+
                 <p class="text-gray-600 text-sm mb-4">Экспоненциалды өсу - банк салымдары мен инвестициялар.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">dA/dt = rA</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
               </div>
+
             </div>
-            <!-- Model Card 5 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('temperature')">
+
               <div class="h-48 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center relative">
-                <svg viewBox="0 0 200 100" class="w-4/5">
-                  <defs>
-                    <linearGradient id="heatGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" style="stop-color:#ff6b6b" />
-                      <stop offset="50%" style="stop-color:#feca57" />
-                      <stop offset="100%" style="stop-color:#48dbfb" />
-                    </linearGradient>
-                  </defs>
-                  <rect x="20" y="35" width="160" height="30" rx="5" fill="url(#heatGrad2)" opacity="0.9" />
-                  <text x="75" y="55" fill="white" font-size="14" font-weight="bold">T(x,t)</text>
-                </svg>
+
+                <svg viewBox="0 0 200 100" class="w-4/5"><text x="75" y="55" fill="white" font-size="14" font-weight="bold">T(x,t)</text></svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Термодинамика</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Жылу таралуы</h3>
+
                 <p class="text-gray-600 text-sm mb-4">Ньютонның салқындау заңы және жылу өткізгіштік теңдеуі.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">∂T/∂t = α∇²T</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
               </div>
+
             </div>
-            <!-- Model Card 6 -->
+
             <div class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer" onclick="openModel('pollution')">
+
               <div class="h-48 bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center relative">
-                <svg viewBox="0 0 200 100" class="w-4/5">
-                  <circle cx="100" cy="50" r="10" fill="white" opacity="1" />
-                  <circle cx="100" cy="50" r="20" fill="white" opacity="0.6" />
-                  <circle cx="100" cy="50" r="30" fill="white" opacity="0.4" />
-                  <circle cx="100" cy="50" r="40" fill="white" opacity="0.2" />
-                  <circle cx="100" cy="50" r="50" fill="white" opacity="0.1" />
-                </svg>
+
+                <svg viewBox="0 0 200 100" class="w-4/5"><circle cx="100" cy="50" r="20" fill="white" opacity="0.6" /></svg>
+
                 <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1"><span class="text-white text-xs font-medium">Экология</span></div>
+
               </div>
+
               <div class="p-6">
+
                 <h3 class="font-bold text-xl text-gray-800 mb-2">Ластану таралуы</h3>
+
                 <p class="text-gray-600 text-sm mb-4">Диффузия теңдеуі - ауа мен судағы ластаушы заттардың таралуы.</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs text-gray-500">∂C/∂t = D∇²C</span>
-                  <span class="inline-flex items-center text-purple-600 font-medium text-sm"> Көру → </span>
-                </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </section>
-      <!-- Contact Page -->
-      <section id="page-contact" class="page-section hidden">
+
+
+
+      <!-- Есептер бөлімі (Problems) -->
+
+      <section id="page-problems" class="page-section hidden">
+
         <div class="gradient-bg py-16">
+
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Бізбен байланысыңыз</h1>
-            <p class="text-white/80">Сұрақтарыңыз бен ұсыныстарыңызды жіберіңіз</p>
+
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Есептер</h1>
+
+            <p class="text-white/80 max-w-2xl mx-auto">Дифференциалдық теңдеулер теориясының жаратылыстану пәндеріндегі қолданылуына арналған интерактивті есептер.</p>
+
           </div>
+
         </div>
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white rounded-2xl shadow-xl p-8">
-              <h2 class="text-xl font-bold text-gray-800 mb-6">Хабарлама жіберу</h2>
-              <form id="contact-form" onsubmit="handleContactSubmit(event)">
-                <div class="space-y-4">
-                  <div><label for="name" class="block text-sm font-medium text-gray-700 mb-1">Аты-жөніңіз</label> <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Сіздің атыңыз"></div>
-                  <div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label> <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="email@example.com"></div>
-                  <div><label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Тақырыбы</label> <select id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"> <option value="question">Сұрақ</option> <option value="suggestion">Ұсыныс</option> <option value="collaboration">Ынтымақтастық</option> <option value="other">Басқа</option> </select></div>
-                  <div><label for="message" class="block text-sm font-medium text-gray-700 mb-1">Хабарлама</label> <textarea id="message" name="message" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none" placeholder="Хабарламаңызды жазыңыз..."></textarea></div>
-                  <button type="submit" class="w-full btn-gradient text-white font-semibold py-3 rounded-lg"> Жіберу </button>
-                </div>
-              </form>
-              <div id="form-success" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-lg text-center">
-                ✓ Хабарламаңыз сәтті жіберілді!
-              </div>
-            </div>
-            <div class="space-y-6">
-              <div class="bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Байланыс ақпараты</h2>
-                <div class="space-y-4">
-                  <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center"><span class="text-white text-xl">📧</span></div>
-                    <div>
-                      <p class="text-sm text-gray-500">Email</p>
-                      <p class="font-medium text-gray-800">turlanorynbassar@mail.ru</p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center"><span class="text-white text-xl">📍</span></div>
-                    <div>
-                      <p class="text-sm text-gray-500">Мекенжай</p>
-                      <p class="font-medium text-gray-800">бейнеу ауылы қыл</p>
-                    </div>
-                  </div>
-                  <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center"><span class="text-white text-xl">🎓</span></div>
-                    <div>
-                      <p class="text-sm text-gray-500">Білім беру платформасы</p>
-                      <p class="font-medium text-gray-800">Барлығына тегін қолжетімді</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl p-8">
-                <h3 class="font-bold text-gray-800 mb-3">🤝 Ынтымақтастық</h3>
-                <p class="text-gray-600 text-sm">Біз университеттер, мектептер және ғылыми ұйымдармен ынтымақтастыққа ашықпыз. Бірлесіп жаңа оқу материалдарын жасауға дайынбыз.</p>
-              </div>
-            </div>
-          </div>
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+          <div id="problems-container" class="space-y-12"></div>
+
         </div>
+
       </section>
-    </main>
-    <!-- Model Modal -->
-    <div id="model-modal" class="fixed inset-0 z-50 hidden">
-      <div class="modal-overlay absolute inset-0 bg-black/60" onclick="closeModal()"></div>
-      <div class="absolute inset-4 md:inset-8 bg-white rounded shadow overflow-hidden slide-in" style="border: 1px solid #d0d0d0;">
-        <div class="h-full flex flex-col">
-          <!-- Modal Header -->
-          <div class="gradient-bg px-6 py-4 flex items-center justify-between" style="background: #2c3e50; border-bottom: 1px solid #1a252f;">
-            <h2 id="modal-title" class="text-xl font-bold text-white">Модель атауы</h2>
-            <button onclick="closeModal()" class="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+
+
+
+      <!-- Contact Page -->
+
+      <section id="page-contact" class="page-section hidden">
+
+        <div class="gradient-bg py-16">
+
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Бізбен байланысыңыз</h1>
+
+            <p class="text-white/80">Сұрақтарыңыз бен ұсыныстарыңызды жіберіңіз</p>
+
           </div>
-          <!-- Modal Content -->
-          <div class="flex-1 overflow-auto">
-            <div class="flex flex-col lg:flex-row h-full">
-              <!-- Left: Chart Area (70-80% of width) -->
-              <div class="lg:w-4/5 p-6 border-b lg:border-b-0 lg:border-r border-gray-300 flex flex-col" style="min-height: 500px;">
-                <div class="flex-1 flex flex-col">
-                  <canvas id="model-chart" style="height: 100%;"></canvas>
+
+        </div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+          <div class="grid md:grid-cols-2 gap-8">
+
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+
+              <h2 class="text-xl font-bold text-gray-800 mb-6">Хабарлама жіберу</h2>
+
+              <form id="contact-form" onsubmit="handleContactSubmit(event)">
+
+                <div class="space-y-4">
+
+                  <div><label class="block text-sm font-medium text-gray-700 mb-1">Аты-жөніңіз</label> <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+
+                  <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label> <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg"></div>
+
+                  <div><label class="block text-sm font-medium text-gray-700 mb-1">Хабарлама</label> <textarea rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none"></textarea></div>
+
+                  <button type="submit" class="w-full btn-gradient text-white font-semibold py-3 rounded-lg"> Жіберу </button>
+
                 </div>
-                <!-- Controls -->
-                <div id="chart-controls" class="mt-6 p-4 bg-white rounded" style="border: 1px solid #d0d0d0;"></div>
-              </div>
-              <!-- Right: Info Sidebar (20-30% of width) -->
-              <div class="lg:w-1/5 p-6 overflow-auto bg-white" style="border-left: 1px solid #d0d0d0;">
-                <div id="model-info" class="space-y-6"></div>
-              </div>
+
+              </form>
+
+              <div id="form-success" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-lg text-center">✓ Хабарламаңыз сәтті жіберілді!</div>
+
             </div>
+
+            <div class="space-y-6">
+
+              <div class="bg-white rounded-2xl shadow-xl p-8">
+
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Байланыс ақпараты</h2>
+
+                <div class="space-y-4">
+
+                  <div class="flex items-center space-x-4">
+
+                    <div class="w-12 h-12 gradient-bg rounded-full flex items-center justify-center"><span class="text-white text-xl">📧</span></div>
+
+                    <div><p class="text-sm text-gray-500">Email</p><p class="font-medium text-gray-800">info@diffeq-hub.kz</p></div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
+
         </div>
+
+      </section>
+
+    </main>
+
+
+
+    <!-- Model Modal (Chart) -->
+
+    <div id="model-modal" class="fixed inset-0 z-50 hidden">
+
+      <div class="modal-overlay absolute inset-0 bg-black/60" onclick="closeModal()"></div>
+
+      <div class="absolute inset-4 md:inset-8 bg-white rounded shadow overflow-hidden slide-in" style="border: 1px solid #d0d0d0;">
+
+        <div class="h-full flex flex-col">
+
+          <div class="gradient-bg px-6 py-4 flex items-center justify-between" style="background: #2c3e50; border-bottom: 1px solid #1a252f;">
+
+            <h2 id="modal-title" class="text-xl font-bold text-white">Модель атауы</h2>
+
+            <button onclick="closeModal()" class="text-white hover:bg-white/20 rounded-full p-2 transition-colors">
+
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+
+            </button>
+
+          </div>
+
+          <div class="flex-1 overflow-auto">
+
+            <div class="flex flex-col lg:flex-row h-full">
+
+              <div class="lg:w-4/5 p-6 border-b lg:border-b-0 lg:border-r border-gray-300 flex flex-col" style="min-height: 500px;">
+
+                <div class="flex-1 flex flex-col">
+
+                  <canvas id="model-chart" style="height: 100%;"></canvas>
+
+                </div>
+
+                <div id="chart-controls" class="mt-6 p-4 bg-white rounded" style="border: 1px solid #d0d0d0;"></div>
+
+              </div>
+
+              <div class="lg:w-1/5 p-6 overflow-auto bg-white" style="border-left: 1px solid #d0d0d0;">
+
+                <div id="model-info" class="space-y-6"></div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
-  </div>
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-3 gap-8">
-        <div>
-          <div class="flex items-center space-x-3 mb-4">
-            <svg width="32" height="32" viewBox="0 0 40 40">
-              <circle cx="20" cy="20" r="18" fill="rgba(102,126,234,0.3)" stroke="#667eea" stroke-width="2" />
-              <path d="M8 20 Q14 10, 20 20 T32 20" stroke="#667eea" stroke-width="3" fill="none" />
-              <text x="16" y="28" font-size="16" fill="#667eea" font-weight="bold">∫</text>
-            </svg>
-            <span class="font-bold text-lg">DiffEq Hub</span>
-          </div>
-          <p class="text-gray-400 text-sm">Дифференциалдық теңдеулерді интерактивті түрде үйренуге арналған білім беру платформасы.</p>
-        </div>
-        <div>
-          <h3 class="font-bold mb-4">Навигация</h3>
-          <ul class="space-y-2 text-gray-400">
-            <li><a href="#" onclick="navigateTo('home')" class="hover:text-white transition-colors">Басты бет</a></li>
-            <li><a href="#" onclick="navigateTo('history')" class="hover:text-white transition-colors">Тарих</a></li>
-            <li><a href="#" onclick="navigateTo('models')" class="hover:text-white transition-colors">Модельдер</a></li>
-            <li><a href="#" onclick="navigateTo('contact')" class="hover:text-white transition-colors">Контакт</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold mb-4">Модельдер</h3>
-          <ul class="space-y-2 text-gray-400">
-            <li><a href="#" onclick="openModel('harmonic')" class="hover:text-white transition-colors">Гармоникалық тербеліс</a></li>
-            <li><a href="#" onclick="openModel('population')" class="hover:text-white transition-colors">Популяция өсуі</a></li>
-            <li><a href="#" onclick="openModel('temperature')" class="hover:text-white transition-colors">Жылу таралуы</a></li>
-            <li><a href="#" onclick="openModel('pollution')" class="hover:text-white transition-colors">Ластану таралуы</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-        <p>© 2024 DiffEq Hub.</p>
-      </div>
-    </div>
-  </footer>
-  <script>
-    // Configuration
-    const defaultConfig = {
-      site_title: 'DiffEq Hub',
-      hero_title: 'Дифференциалдық модельдер',
-      primary_color: '#667eea',
-      secondary_color: '#764ba2',
-      text_color: '#1f2937',
-      bg_color: '#f9fafb',
-      accent_color: '#ffffff'
-    };
-    let config = { ...defaultConfig };
-    let currentChart = null;
-    // Element SDK Initialization
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (newConfig) => {
-          config = { ...config, ...newConfig };
-          updateUI();
-        },
-        mapToCapabilities: (cfg) => ({
-          recolorables: [
-            {
-              get: () => cfg.primary_color || defaultConfig.primary_color,
-              set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }
-            },
-            {
-              get: () => cfg.secondary_color || defaultConfig.secondary_color,
-              set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); }
-            },
-            {
-              get: () => cfg.text_color || defaultConfig.text_color,
-              set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
-            },
-            {
-              get: () => cfg.bg_color || defaultConfig.bg_color,
-              set: (v) => { cfg.bg_color = v; window.elementSdk.setConfig({ bg_color: v }); }
-            },
-            {
-              get: () => cfg.accent_color || defaultConfig.accent_color,
-              set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
-            }
-          ],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (cfg) => new Map([
-          ['site_title', cfg.site_title || defaultConfig.site_title],
-          ['hero_title', cfg.hero_title || defaultConfig.hero_title]
-        ])
-      });
-    }
-    function updateUI() {
-      document.getElementById('site-title').textContent = config.site_title || defaultConfig.site_title;
-      const heroElement = document.getElementById('hero-title');
-      if (heroElement) {
-        heroElement.textContent = config.hero_title || defaultConfig.hero_title;
-      }
-    }
-    // Navigation
-    function navigateTo(page) {
-      document.querySelectorAll('.page-section').forEach(section => {
-        section.classList.add('hidden');
-      });
-      document.getElementById(`page-${page}`).classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    }
-    // Model Data
-    const modelData = {
-      harmonic: {
-        title: 'Гармоникалық тербеліс',
-        equation: '\\frac{d^2y}{dt^2} + \\omega^2 y = 0',
-        solution: 'y(t) = A \\cos(\\omega t + \\phi)',
-        description: 'Гармоникалық тербеліс - бұл периодты қозғалыстың ең қарапайым түрі. Серіппедегі жүк, маятник, электр тізбегіндегі ток тербелістері осы модельмен сипатталады.',
-        applications: [
-          'Серіппелі жүйелер (Гук заңы)',
-          'Қарапайым маятник',
-          'Электр тізбектері (LC контуры)',
-          'Акустикалық толқындар',
-          'Молекулалық тербелістер'
-        ],
-        params: { A: 2, omega: 1, phi: 0 },
-        category: 'Физика'
-      },
-      seismograph: {
-        title: 'Сейсмограф моделі',
-        equation: 'M = \\log_{10}\\left(\\frac{A}{A_0}\\right)',
-        solution: 'x(t) = A e^{-\\gamma t} \\sin(\\omega t)',
-        description: 'Сейсмограф жер сілкінісі толқындарын тіркейді. Рихтер шкаласы толқын амплитудасының логарифмін қолданады. Демпферленген тербеліс теңдеуі сейсмографтың жауабын сипаттайды.',
-        applications: [
-          'Жер сілкінісін өлшеу',
-          'Сейсмикалық зерттеулер',
-          'Құрылыс қауіпсіздігі',
-          'Жер қыртысының құрылымын зерттеу',
-          'Цунами ескерту жүйелері'
-        ],
-        params: { A: 5, gamma: 0.3, omega: 2 },
-        category: 'Сейсмология'
-      },
-      population: {
-        title: 'Популяция өсуі',
-        equation: '\\frac{dP}{dt} = rP\\left(1 - \\frac{P}{K}\\right)',
-        solution: 'P(t) = \\frac{K}{1 + \\left(\\frac{K-P_0}{P_0}\\right)e^{-rt}}',
-        description: 'Логистикалық өсу моделі шектеулі ресурстар жағдайындағы популяция динамикасын сипаттайды. K - орта сыйымдылығы, r - өсу жылдамдығы.',
-        applications: [
-          'Жануарлар популяциясы',
-          'Бактериялар өсуі',
-          'Технология таралуы',
-          'Эпидемиология',
-          'Экологиялық модельдеу'
-        ],
-        params: { K: 100, r: 0.5, P0: 10 },
-        category: 'Биология'
-      },
-      interest: {
-        title: 'Үздіксіз пайыздар',
-        equation: '\\frac{dA}{dt} = rA',
-        solution: 'A(t) = A_0 e^{rt}',
-        description: 'Үздіксіз құрама пайыз формуласы қаржылық өсуді модельдейді. Банк салымдары, инвестициялар және экономикалық өсу осы теңдеумен сипатталады.',
-        applications: [
-          'Банк салымдары',
-          'Инвестициялық портфель',
-          'Инфляция есептеу',
-          'Несие пайыздары',
-          'Экономикалық болжам'
-        ],
-        params: { A0: 1000, r: 0.05 },
-        category: 'Экономика'
-      },
-      temperature: {
-        title: 'Жылу таралуы',
-        equation: '\\frac{dT}{dt} = -k(T - T_s)',
-        solution: 'T(t) = T_s + (T_0 - T_s)e^{-kt}',
-        description: 'Ньютонның салқындау заңы дененің температурасының қоршаған орта температурасына жақындауын сипаттайды. k - жылу алмасу коэффициенті.',
-        applications: [
-          'Ғимараттарды жылыту/салқындату',
-          'Криминалистика (өлім уақытын анықтау)',
-          'Тамақ өнеркәсібі',
-          'Металлургия',
-          'Климаттық жүйелер'
-        ],
-        params: { T0: 100, Ts: 20, k: 0.1 },
-        category: 'Термодинамика'
-      },
-      pollution: {
-        title: 'Ластану таралуы',
-        equation: '\\frac{\\partial C}{\\partial t} = D \\nabla^2 C - \\lambda C',
-        solution: 'C(x,t) = \\frac{M}{\\sqrt{4\\pi Dt}} e^{-\\frac{x^2}{4Dt}}',
-        description: 'Диффузия теңдеуі ластаушы заттардың ауада немесе суда таралуын сипаттайды. D - диффузия коэффициенті, λ - ыдырау жылдамдығы.',
-        applications: [
-          'Ауа сапасын модельдеу',
-          'Су ластануы',
-          'Өнеркәсіптік шығарындылар',
-          'Қоқыс полигондары',
-          'Экологиялық сараптама'
-        ],
-        params: { D: 1, M: 100, lambda: 0.01 },
-        category: 'Экология'
-      }
-    };
-    // Open Model Modal
-    function openModel(modelId) {
-      const model = modelData[modelId];
-      if (!model) return;
-      document.getElementById('modal-title').textContent = model.title;
-      // Generate info HTML
-      const infoHtml = `
-        <div>
-          <span class="inline-block bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full mb-4">${model.category}</span>
-          <h3 class="font-bold text-gray-800 mb-2">Дифференциалдық теңдеу</h3>
-          <div class="bg-gray-100 rounded-lg p-4 text-center">
-            <span class="text-lg">\\[${model.equation}\\]</span>
-          </div>
-        </div>
-        <div>
-          <h3 class="font-bold text-gray-800 mb-2">Шешімі</h3>
-          <div class="bg-blue-50 rounded-lg p-4 text-center">
-            <span>\\[${model.solution}\\]</span>
-          </div>
-        </div>
-        <div>
-          <h3 class="font-bold text-gray-800 mb-2">Сипаттама</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">${model.description}</p>
-        </div>
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-          <p class="text-green-800 text-xs font-medium">💡 <strong>Ескерту:</strong> Дифференциалдық шешім (көк түс) қарапайым шешімге (қызыл түс) қарағанда нақтырақ және нормативтік болып табылады.</p>
-        </div>
-        <div>
-          <h3 class="font-bold text-gray-800 mb-2">Қолданыс салалары</h3>
-          <ul class="space-y-2">
-            ${model.applications.map(app => `
-              <li class="flex items-center text-sm text-gray-600">
-                <span class="w-2 h-2 bg-purple-600 rounded-full mr-3"></span>
-                ${app}
-              </li>
-            `).join('')}
-          </ul>
-        </div>
-      `;
-      document.getElementById('model-info').innerHTML = infoHtml;
-      // Generate controls HTML
-      const controlsHtml = generateControls(modelId, model.params);
-      document.getElementById('chart-controls').innerHTML = controlsHtml;
-      // Show modal
-      document.getElementById('model-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      // Render MathJax
-      if (window.MathJax) {
-        MathJax.typesetPromise();
-      }
-      // Create chart
-      setTimeout(() => createChart(modelId, model.params), 100);
-    }
-    function generateControls(modelId, params) {
-      const labels = {
-        A: 'Амплитуда (A)',
-        omega: 'Жиілік (ω)',
-        phi: 'Фаза (φ)',
-        gamma: 'Демпфер (γ)',
-        K: 'Сыйымдылық (K)',
-        r: 'Өсу жылд. (r)',
-        P0: 'Бастапқы (P₀)',
-        A0: 'Бастапқы (A₀)',
-        T0: 'Бастапқы T (T₀)',
-        Ts: 'Орта T (Tₛ)',
-        k: 'Коэффициент (k)',
-        D: 'Диффузия (D)',
-        M: 'Масса (M)',
-        lambda: 'Ыдырау (λ)'
-      };
-      let html = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">';
-      for (const [key, value] of Object.entries(params)) {
-        html += `
+
+
+
+    <!-- Footer -->
+
+    <footer class="bg-gray-900 text-white py-12">
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="grid md:grid-cols-3 gap-8">
+
           <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">${labels[key] || key}</label>
-            <input type="number" id="param-\( {key}" value=" \){value}" step="0.1"
-              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              onchange="updateChart('${modelId}')">
+
+            <div class="flex items-center space-x-3 mb-4">
+
+              <svg width="32" height="32" viewBox="0 0 40 40">
+
+                <circle cx="20" cy="20" r="18" fill="rgba(102,126,234,0.3)" stroke="#667eea" stroke-width="2" />
+
+                <path d="M8 20 Q14 10, 20 20 T32 20" stroke="#667eea" stroke-width="3" fill="none" />
+
+                <text x="16" y="28" font-size="16" fill="#667eea" font-weight="bold">∫</text>
+
+              </svg>
+
+              <span class="font-bold text-lg">DiffEq Hub</span>
+
+            </div>
+
+            <p class="text-gray-400 text-sm">Дифференциалдық теңдеулерді интерактивті түрде үйренуге арналған білім беру платформасы.</p>
+
           </div>
-        `;
-      }
-      html += '</div>';
-      html += `<button onclick="updateChart('${modelId}')" class="mt-4 w-full btn-gradient text-white font-medium py-2 rounded-lg text-sm">Графикті жаңарту</button>`;
-      return html;
+
+          <div>
+
+            <h3 class="font-bold mb-4">Навигация</h3>
+
+            <ul class="space-y-2 text-gray-400">
+
+              <li><a href="#" onclick="navigateTo('home')" class="hover:text-white transition-colors">Басты бет</a></li>
+
+              <li><a href="#" onclick="navigateTo('history')" class="hover:text-white transition-colors">Тарих</a></li>
+
+              <li><a href="#" onclick="navigateTo('models')" class="hover:text-white transition-colors">Модельдер</a></li>
+
+              <li><a href="#" onclick="navigateTo('problems')" class="hover:text-white transition-colors">Есептер</a></li>
+
+            </ul>
+
+          </div>
+
+          <div>
+
+            <h3 class="font-bold mb-4">Модельдер мен есептер</h3>
+
+            <ul class="space-y-2 text-gray-400">
+
+              <li><a href="#" onclick="navigateTo('models')" class="hover:text-white transition-colors">Модельдер</a></li>
+
+              <li><a href="#" onclick="navigateTo('problems')" class="hover:text-white transition-colors">Есептер</a></li>
+
+            </ul>
+
+          </div>
+
+        </div>
+
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+
+          <p>© 2026 DiffEq Hub. Жоба Нағмет Аслан мен Орынбасар Тұрланның ғылыми жұмысы негізінде жасалған.</p>
+
+        </div>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+
+
+  <script>
+
+    // Navigation Logic
+
+    function navigateTo(page) {
+
+      document.querySelectorAll('.page-section').forEach(section => section.classList.add('hidden'));
+
+      document.getElementById(`page-${page}`).classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (page === 'problems') renderProblems();
+
     }
-    function getParams(modelId) {
+
+
+
+    function toggleMobileMenu() {
+
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+
+    }
+
+
+
+    // ====================== МОДЕЛЬДЕР МЕН ГРАФИКТЕР (С ЕКІ СЫЗЫҚПЕН) ======================
+
+    let currentChart = null;
+
+
+
+    const modelData = {
+
+      harmonic: {
+
+        title: 'Гармоникалық тербеліс',
+
+        equation: '\\frac{d^2y}{dt^2} + \\omega^2 y = 0',
+
+        solution: 'y(t) = A \\cos(\\omega t + \\phi)',
+
+        description: 'Гармоникалық тербеліс. Серіппедегі жүк, маятник, электр тізбегіндегі ток тербелістері осы модельмен сипатталады.',
+
+        applications: ['Серіппелі жүйелер', 'Қарапайым маятник', 'Электр тізбектері', 'Акустикалық толқындар'],
+
+        params: { A: 2, omega: 1, phi: 0 },
+
+        category: 'Физика'
+
+      },
+
+      seismograph: {
+
+        title: 'Сейсмограф моделі',
+
+        equation: 'M = \\log_{10}\\left(\\frac{A}{A_0}\\right)',
+
+        solution: 'x(t) = A e^{-\\gamma t} \\sin(\\omega t)',
+
+        description: 'Сейсмограф жер сілкінісі толқындарын тіркейді. Демпферленген тербеліс теңдеуі сейсмографтың жауабын сипаттайды.',
+
+        applications: ['Жер сілкінісін өлшеу', 'Сейсмикалық зерттеулер', 'Құрылыс қауіпсіздігі'],
+
+        params: { A: 5, gamma: 0.3, omega: 2 },
+
+        category: 'Сейсмология'
+
+      },
+
+      population: {
+
+        title: 'Популяция өсуі',
+
+        equation: '\\frac{dP}{dt} = rP\\left(1 - \\frac{P}{K}\\right)',
+
+        solution: 'P(t) = \\frac{K}{1 + \\left(\\frac{K-P_0}{P_0}\\right)e^{-rt}}',
+
+        description: 'Логистикалық өсу моделі шектеулі ресурстар жағдайындағы популяция динамикасын сипаттайды.',
+
+        applications: ['Жануарлар популяциясы', 'Бактериялар өсуі', 'Эпидемиология'],
+
+        params: { K: 100, r: 0.5, P0: 10 },
+
+        category: 'Биология'
+
+      },
+
+      interest: {
+
+        title: 'Үздіксіз пайыздар',
+
+        equation: '\\frac{dA}{dt} = rA',
+
+        solution: 'A(t) = A_0 e^{rt}',
+
+        description: 'Үздіксіз құрама пайыз формуласы қаржылық өсуді модельдейді.',
+
+        applications: ['Банк салымдары', 'Инвестициялық портфель', 'Инфляция есептеу'],
+
+        params: { A0: 1000, r: 0.05 },
+
+        category: 'Экономика'
+
+      },
+
+      temperature: {
+
+        title: 'Жылу таралуы',
+
+        equation: '\\frac{dT}{dt} = -k(T - T_s)',
+
+        solution: 'T(t) = T_s + (T_0 - T_s)e^{-kt}',
+
+        description: 'Ньютонның салқындау заңы дененің температурасының қоршаған орта температурасына жақындауын сипаттайды.',
+
+        applications: ['Ғимараттарды жылыту/салқындату', 'Криминалистика', 'Тамақ өнеркәсібі'],
+
+        params: { T0: 100, Ts: 20, k: 0.1 },
+
+        category: 'Термодинамика'
+
+      },
+
+      pollution: {
+
+        title: 'Ластану таралуы',
+
+        equation: '\\frac{\\partial C}{\\partial t} = D \\nabla^2 C - \\lambda C',
+
+        solution: 'C(x,t) = \\frac{M}{\\sqrt{4\\pi Dt}} e^{-\\frac{x^2}{4Dt}}',
+
+        description: 'Диффузия теңдеуі ластаушы заттардың ауада немесе суда таралуын сипаттайды.',
+
+        applications: ['Ауа сапасын модельдеу', 'Су ластануы', 'Өнеркәсіптік шығарындылар'],
+
+        params: { D: 1, M: 100, lambda: 0.01 },
+
+        category: 'Экология'
+
+      }
+
+    };
+
+
+
+    function openModel(modelId) {
+
       const model = modelData[modelId];
+
+      if (!model) return;
+
+      document.getElementById('modal-title').textContent = model.title;
+
+      
+
+      const infoHtml = `
+
+        <div>
+
+          <span class="inline-block bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full mb-4">${model.category}</span>
+
+          <h3 class="font-bold text-gray-800 mb-2">Дифференциалдық теңдеу</h3>
+
+          <div class="bg-gray-100 rounded-lg p-4 text-center"><span class="text-lg">\\[${model.equation}\\]</span></div>
+
+        </div>
+
+        <div>
+
+          <h3 class="font-bold text-gray-800 mb-2 mt-4">Шешімі</h3>
+
+          <div class="bg-blue-50 rounded-lg p-4 text-center"><span>\\[${model.solution}\\]</span></div>
+
+        </div>
+
+        <div class="mt-4">
+
+          <p class="text-gray-600 text-sm leading-relaxed">${model.description}</p>
+
+        </div>
+
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mt-4">
+
+          <p class="text-green-800 text-xs font-medium">💡 <strong>Ескерту:</strong> Графикте дифференциалдық шешім (көк түс) және қарапайым (сызықтық/жуықталған) шешім (қызыл үзік сызық) салыстырылған.</p>
+
+        </div>
+
+      `;
+
+      document.getElementById('model-info').innerHTML = infoHtml;
+
+      
+
+      let controlsHtml = '<div class="grid grid-cols-2 gap-3">';
+
+      for (const [key, value] of Object.entries(model.params)) {
+
+        controlsHtml += `
+
+          <div>
+
+            <label class="block text-xs font-medium text-gray-600 mb-1">${key}</label>
+
+            <input type="number" id="param-${key}" value="${value}" step="0.1" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" onchange="updateChart('${modelId}')">
+
+          </div>`;
+
+      }
+
+      controlsHtml += `</div><button onclick="updateChart('${modelId}')" class="mt-4 w-full btn-gradient text-white font-medium py-2 rounded-lg text-sm">Графикті жаңарту</button>`;
+
+      
+
+      document.getElementById('chart-controls').innerHTML = controlsHtml;
+
+      document.getElementById('model-modal').classList.remove('hidden');
+
+      document.body.style.overflow = 'hidden';
+
+      
+
+      if (window.MathJax) MathJax.typesetPromise();
+
+      setTimeout(() => createChart(modelId, model.params), 100);
+
+    }
+
+
+
+    function getParams(modelId) {
+
+      const model = modelData[modelId];
+
       const params = {};
+
       for (const key of Object.keys(model.params)) {
+
         const input = document.getElementById(`param-${key}`);
+
         params[key] = input ? parseFloat(input.value) : model.params[key];
+
       }
+
       return params;
+
     }
-    function createChart(modelId, params) {
-      const ctx = document.getElementById('model-chart').getContext('2d');
-      if (currentChart) {
-        currentChart.destroy();
-      }
-      const data = generateChartData(modelId, params);
-      currentChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: data.labels,
-          datasets: data.datasets
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                usePointStyle: true,
-                font: { size: 11 }
-              }
-            },
-            tooltip: {
-              backgroundColor: 'rgba(0,0,0,0.8)',
-              padding: 12,
-              titleFont: { size: 13 },
-              bodyFont: { size: 12 }
-            }
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: data.xLabel || 't (уақыт)',
-                font: { size: 12, weight: 'bold' }
-              },
-              grid: { color: 'rgba(0,0,0,0.05)' }
-            },
-            y: {
-              title: {
-                display: true,
-                text: data.yLabel || 'y(t)',
-                font: { size: 12, weight: 'bold' }
-              },
-              grid: { color: 'rgba(0,0,0,0.05)' }
-            }
-          },
-          interaction: {
-            intersect: false,
-            mode: 'index'
-          }
-        }
-      });
-    }
+
+
+
+    // Здесь генерируются ОБА графика (Дифференциальный и Простой)
+
     function generateChartData(modelId, params) {
+
       const t = [];
+
       const n = 100;
-      const tMax = modelId === 'population' || modelId === 'interest' ? 20 : 10;
-      for (let i = 0; i <= n; i++) {
-        t.push((i * tMax / n).toFixed(2));
-      }
+
+      const tMax = (modelId === 'population' || modelId === 'interest') ? 20 : 10;
+
+      for (let i = 0; i <= n; i++) t.push((i * tMax / n).toFixed(2));
+
+      
+
       let datasets = [];
-      let yLabel = 'y(t)';
-      let xLabel = 't (уақыт)';
+
+      let yLabel = 'y(t)', xLabel = 't (уақыт)';
+
+      
+
       switch (modelId) {
+
         case 'harmonic':
-          const yDiff = t.map(ti => params.A * Math.cos(params.omega * ti + params.phi));
-          const ySimple = t.map(ti => params.A - 0.5 * params.omega * params.omega * params.A * (ti * ti / 2));
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: yDiff, borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: ySimple, borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық шешім', data: t.map(ti => params.A * Math.cos(params.omega * ti + params.phi)), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (параболалық жуықтау)', data: t.map(ti => params.A - 0.5 * params.omega * params.omega * params.A * (ti * ti / 2)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           yLabel = 'y(t) - ығысу';
+
           break;
+
         case 'seismograph':
-          const yDampedOsc = t.map(ti => params.A * Math.exp(-params.gamma * ti) * Math.sin(params.omega * ti));
-          const yExpDecay = t.map(ti => params.A * Math.exp(-params.gamma * ti * 0.5));
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: yDampedOsc, borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: yExpDecay, borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық шешім', data: t.map(ti => params.A * Math.exp(-params.gamma * ti) * Math.sin(params.omega * ti)), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (тек өшу)', data: t.map(ti => params.A * Math.exp(-params.gamma * ti * 0.5)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           yLabel = 'x(t) - амплитуда';
+
           break;
+
         case 'population':
-          const yLogistic = t.map(ti => {
-            const exp = Math.exp(-params.r * ti);
-            return params.K / (1 + ((params.K - params.P0) / params.P0) * exp);
-          });
-          const yExponential = t.map(ti => params.P0 * Math.exp(params.r * ti * 0.5));
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: yLogistic, borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: yExponential, borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық (Логистикалық)', data: t.map(ti => params.K / (1 + ((params.K - params.P0) / params.P0) * Math.exp(-params.r * ti))), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (Шексіз экспонента)', data: t.map(ti => params.P0 * Math.exp(params.r * ti * 0.5)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           yLabel = 'P(t) - популяция';
+
           break;
+
         case 'interest':
-          const yContinuous = t.map(ti => params.A0 * Math.exp(params.r * ti));
-          const ySimpleInt = t.map(ti => params.A0 * (1 + params.r * ti));
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: yContinuous, borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: ySimpleInt, borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық (Күрделі пайыз)', data: t.map(ti => params.A0 * Math.exp(params.r * ti)), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (Жай пайыз)', data: t.map(ti => params.A0 * (1 + params.r * ti)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           yLabel = 'A(t) - сома';
+
           xLabel = 't (жыл)';
+
           break;
+
         case 'temperature':
-          const yNewton = t.map(ti => params.Ts + (params.T0 - params.Ts) * Math.exp(-params.k * ti));
-          const yLinear = t.map(ti => Math.max(params.Ts, params.T0 - params.k * (params.T0 - params.Ts) * ti * 5));
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: yNewton, borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: yLinear, borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық шешім', data: t.map(ti => params.Ts + (params.T0 - params.Ts) * Math.exp(-params.k * ti)), borderColor: '#667eea', backgroundColor: 'rgba(102, 126, 234, 0.1)', borderWidth: 2.5, fill: true, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (Сызықтық суу)', data: t.map(ti => Math.max(params.Ts, params.T0 - params.k * (params.T0 - params.Ts) * ti * 5)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           yLabel = 'T(t) - температура (°C)';
+
           break;
+
         case 'pollution':
+
           const x = [];
-          for (let i = -5; i <= 5; i += 0.1) {
-            x.push(i.toFixed(1));
-          }
+
+          for (let i = -5; i <= 5; i += 0.1) x.push(i.toFixed(1));
+
           const t1 = 5;
-          const calcDiffusion = (xi, ti) => {
-            if (ti <= 0) return 0;
-            return (params.M / Math.sqrt(4 * Math.PI * params.D * ti)) *
-                   Math.exp(-xi * xi / (4 * params.D * ti)) *
-                   Math.exp(-params.lambda * ti);
-          };
-          const calcSimple = (xi, ti) => {
-            if (ti <= 0) return 0;
-            return (params.M / Math.sqrt(4 * Math.PI * params.D * ti)) *
-                   Math.exp(-xi * xi / (4 * params.D * ti));
-          };
+
           datasets = [
-            { label: 'Дифференциалдық шешім', data: x.map(xi => calcDiffusion(parseFloat(xi), t1)), borderColor: '#667eea', borderWidth: 2.5, fill: false, tension: 0.4, pointRadius: 0 },
-            { label: 'Қарапайым шешім', data: x.map(xi => calcSimple(parseFloat(xi), t1)), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
+            { label: 'Дифференциалдық (ыдыраумен)', data: x.map(xi => {
+
+                if (t1 <= 0) return 0;
+
+                return (params.M / Math.sqrt(4 * Math.PI * params.D * t1)) * Math.exp(-parseFloat(xi)*parseFloat(xi) / (4 * params.D * t1)) * Math.exp(-params.lambda * t1);
+
+              }), borderColor: '#667eea', borderWidth: 2.5, fill: false, tension: 0.4, pointRadius: 0 },
+
+            { label: 'Қарапайым (ыдыраусыз)', data: x.map(xi => {
+
+                if (t1 <= 0) return 0;
+
+                return (params.M / Math.sqrt(4 * Math.PI * params.D * t1)) * Math.exp(-parseFloat(xi)*parseFloat(xi) / (4 * params.D * t1));
+
+              }), borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0 }
+
           ];
+
           return { labels: x, datasets, yLabel: 'C(x,t) - концентрация', xLabel: 'x - қашықтық' };
+
       }
+
       return { labels: t, datasets, yLabel, xLabel };
+
     }
+
+
+
+    function createChart(modelId, params) {
+
+      const ctx = document.getElementById('model-chart').getContext('2d');
+
+      if (currentChart) currentChart.destroy();
+
+      const data = generateChartData(modelId, params);
+
+      currentChart = new Chart(ctx, {
+
+        type: 'line',
+
+        data: { labels: data.labels, datasets: data.datasets },
+
+        options: {
+
+          responsive: true, maintainAspectRatio: false,
+
+          plugins: { legend: { position: 'top', labels: { usePointStyle: true, font: { size: 12 } } } },
+
+          scales: {
+
+            x: { title: { display: true, text: data.xLabel } },
+
+            y: { title: { display: true, text: data.yLabel } }
+
+          },
+
+          interaction: { intersect: false, mode: 'index' }
+
+        }
+
+      });
+
+    }
+
+
+
     function updateChart(modelId) {
-      const params = getParams(modelId);
-      createChart(modelId, params);
+
+      createChart(modelId, getParams(modelId));
+
     }
+
+
+
     function closeModal() {
+
       document.getElementById('model-modal').classList.add('hidden');
+
       document.body.style.overflow = 'auto';
-      if (currentChart) {
-        currentChart.destroy();
-        currentChart = null;
-      }
+
+      if (currentChart) { currentChart.destroy(); currentChart = null; }
+
     }
-    // Contact Form Handler
+
+
+
+    // ====================== ЕСЕПТЕР (ТҮЗЕТІЛГЕН ДИЗАЙН) ======================
+
+    const problemsData = [
+
+      {
+
+        id: "phys1", category: "Физика",
+
+        title: "Кофенің температурасы (Ньютон заңы)",
+
+        statement: "Кофенің бастапқы температурасы T(0) = 90 °C. Бөлменің температурасы Ts = 25 °C. Суу коэффициенті k = 0.2 мин⁻¹. 5 минуттан кейінгі температураны табыңыз.",
+
+        correctAnswer: 48.91, tolerance: 0.2, unit: "°C",
+
+        solutionHtml: `Негізгі дифференциалдық теңдеу:<br>\\(\\frac{dT}{dt} = -k(T - T_s)\\)<br>Шешімі (айнымалыларды бөліп интегралдау):<br>\\(T(t) = T_s + (T_0 - T_s)e^{-kt}\\)<br>\\(T(5) = 25 + 65 \\times e^{-1} \\approx 48.91\\)`
+
+      },
+
+      {
+
+        id: "phys2", category: "Физика",
+
+        title: "Радиоактивті ыдырау (уран)",
+
+        statement: "Уран изотопының жартылай ыдырау периоды 4.5×10⁹ жыл. Бастапқы атом саны N₀ = 1 000 000. 1 миллиард жылдан кейін қанша атом қалады?",
+
+        correctAnswer: 857000, tolerance: 5000, unit: "",
+
+        solutionHtml: `\\(\\lambda = \\frac{\\ln 2}{4.5 \\times 10^9}\\)<br>Негізгі теңдеу: \\(N(t) = N_0 e^{-\\lambda t}\\)<br>Есептеу: \\(N(10^9) \\approx 857000\\)`
+
+      },
+
+      {
+
+        id: "phys3", category: "Физика",
+
+        title: "Доптың қозғалысы (кедергімен)",
+
+        statement: "Алмас допты бұрышпен лақтырды. Бастапқы жылдамдық, кедергі коэффициенті және S = 800 м қашықтық берілген. Лақтыру бұрышын табыңыз (дифференциалдық теңдеу арқылы).",
+
+        correctAnswer: 45, tolerance: 2, unit: "°",
+
+        solutionHtml: `Х және У өстері бойынша: \\(v_x' = -k v_x\\), \\(v_y' = -g - k v_y\\)<br>Интегралдау және \\(y(t)=0\\) шешімі арқылы бұрыш = 45°`
+
+      },
+
+      {
+
+        id: "geo1", category: "География",
+
+        title: "Судың өзін-өзі тазартуы",
+
+        statement: "Ластанудан кейінгі судың бастапқы концентрациясы C₀. Өзін-өзі тазарту күші k = 0.1 сағ⁻¹. 10 сағаттан кейінгі концентрацияны табыңыз.",
+
+        correctAnswer: 30.3, tolerance: 1, unit: "% азаю",
+
+        solutionHtml: `Негізгі теңдеу: \\(\\frac{dC}{dt} = -k C\\)<br>Интеграл: \\(C(t) = C_0 e^{-kt}\\)<br>10 сағатта концентрация 30.3% азайды`
+
+      },
+
+      {
+
+        id: "geo2", category: "География",
+
+        title: "Мұздықтың еруі",
+
+        statement: "Солтүстік полюсте мұздықтың еру жылдамдығы бетінің ауданына пропорционал. Көлемі екі есе азаю үшін қанша жыл керек?",
+
+        correctAnswer: 123.8, tolerance: 0.5, unit: "жыл",
+
+        solutionHtml: `\\(\\frac{dV}{dt} = -k V^{2/3}\\) (аудан \\(\\propto V^{2/3}\\))<br>Интегралдау арқылы t = 123.8 жыл`
+
+      },
+
+      {
+
+        id: "geo3", category: "География",
+
+        title: "Шөлейттенген аймақта өсімдік жамылғысы",
+
+        statement: "Бастапқыда 20% өсімдік жамылғысы. Таралу коэффициенті 0.05. 60%-ға жету үшін қанша уақыт керек?",
+
+        correctAnswer: 22.3, tolerance: 1, unit: "жыл",
+
+        solutionHtml: `\\(\\frac{dy}{dt} = 0.05 y (1 - y)\\)<br>Логистикалық шешім: \\(y(t) = \\frac{4}{1 + 3e^{-0.05t}}\\)<br>t ≈ 22.3 жыл`
+
+      },
+
+      {
+
+        id: "bio1", category: "Биология",
+
+        title: "Бактериялардың логистикалық өсуі",
+
+        statement: "r = 1.2, K = 1000, N(0) = 100. 2 күннен кейінгі жасуша саны және популяция 90% K-ға жететін уақытты табыңыз.",
+
+        correctAnswer: 450, tolerance: 20, unit: "дара",
+
+        solutionHtml: `\\(N(t) = \\frac{K}{1 + \\left(\\frac{K-N_0}{N_0}\\right)e^{-rt}}\\)<br>2 күнде ≈ 450<br>t (0.9K) ≈ 4.6 күн`
+
+      },
+
+      {
+
+        id: "bio2", category: "Биология",
+
+        title: "SIR модельі (вирус таралуы)",
+
+        statement: "N = 10 000, S(0)=9990, I(0)=10, R(0)=0. Ауырған адамдардың шекті санын табыңыз.",
+
+        correctAnswer: 8000, tolerance: 500, unit: "адам",
+
+        solutionHtml: `Жүйе теңдеулері:<br>\\(\\frac{dS}{dt} = -\\frac{\\beta SI}{N}\\), \\(\\frac{dI}{dt} = \\frac{\\beta SI}{N} - \\gamma I\\)<br>Шексіздікте \\(R_\\infty \\approx 8000\\)`
+
+      },
+
+      {
+
+        id: "eco1", category: "Экология",
+
+        title: "Оттегі – балық популяциясы",
+
+        statement: "N(0)=100, O(0)=50. 1 уақыт бірлігінен кейін балық саны қандай болады?",
+
+        correctAnswer: 90, tolerance: 2, unit: "дара",
+
+        solutionHtml: `Жүйе:<br>\\(\\frac{dN}{dt} = aN - bN O\\)<br>\\(\\frac{dO}{dt} = c - dN\\)<br>1 уақыт бірлігінде N = 90`
+
+      },
+
+      {
+
+        id: "eco2", category: "Экология",
+
+        title: "Популяцияның логистикалық өсуі",
+
+        statement: "N(0) = 100, K = 1000, r = 0.4. 5 айдан кейінгі популяция саны?",
+
+        correctAnswer: 450, tolerance: 20, unit: "дара",
+
+        solutionHtml: `\\(N(t) = \\frac{1000}{1 + 9e^{-0.4t}}\\)<br>5 айда ≈ 450 дара`
+
+      }
+
+    ];
+
+
+
+    function renderProblems() {
+
+      const container = document.getElementById('problems-container');
+
+      container.innerHTML = '';
+
+
+
+      const categories = {};
+
+      problemsData.forEach(p => {
+
+        if (!categories[p.category]) categories[p.category] = [];
+
+        categories[p.category].push(p);
+
+      });
+
+
+
+      Object.keys(categories).forEach(cat => {
+
+        const sectionHTML = `
+
+          <div class="mb-10">
+
+            <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center">
+
+              <span class="inline-block w-3 h-3 bg-blue-600 rounded-full mr-3"></span>${cat}
+
+            </h2>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              ${categories[cat].map(problem => `
+
+                <div class="problem-card bg-white rounded-2xl shadow-lg p-6 border border-gray-200 hover:border-blue-300 flex flex-col justify-between">
+
+                  <div>
+
+                    <h4 class="font-semibold text-lg mb-3">${problem.title}</h4>
+
+                    <p class="text-gray-600 text-sm mb-6 leading-relaxed">${problem.statement}</p>
+
+                  </div>
+
+                  
+
+                  <!-- Изменённый дизайн: поле сверху, кнопки снизу -->
+
+                  <div class="flex flex-col gap-3 mt-auto">
+
+                    <input type="text" id="ans-input-${problem.id}" placeholder="Жауабыңыз (${problem.unit})"
+
+                           class="answer-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-medium text-center">
+
+                    
+
+                    <div class="grid grid-cols-2 gap-3">
+
+                      <button onclick="checkAnswer('${problem.id}')" class="btn-gradient text-white py-3 rounded-xl font-medium w-full text-sm">Тексеру</button>
+
+                      <button onclick="showProblemSolution('${problem.id}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-medium w-full text-sm">Шешу жолы</button>
+
+                    </div>
+
+                  </div>
+
+                  
+
+                  <div id="result-${problem.id}" class="mt-4 text-sm font-medium hidden text-center"></div>
+
+                  <div id="solution-${problem.id}" class="hidden mt-6 bg-blue-50 border border-blue-200 rounded-2xl p-5 text-sm leading-relaxed">
+
+                    ${problem.solutionHtml}
+
+                  </div>
+
+                </div>
+
+              `).join('')}
+
+            </div>
+
+          </div>
+
+        `;
+
+        container.innerHTML += sectionHTML;
+
+      });
+
+
+
+      if (window.MathJax) MathJax.typesetPromise();
+
+    }
+
+
+
+    window.checkAnswer = function(id) {
+
+      const problem = problemsData.find(p => p.id === id);
+
+      if (!problem) return;
+
+
+
+      const inputEl = document.getElementById(`ans-input-${id}`);
+
+      const resultEl = document.getElementById(`result-${id}`);
+
+      const userAnswer = parseFloat(inputEl.value.trim());
+
+
+
+      if (isNaN(userAnswer)) {
+
+        resultEl.classList.remove('hidden');
+
+        resultEl.innerHTML = `<span class="text-red-600">Сан енгізіңіз!</span>`;
+
+        inputEl.classList.add('wrong');
+
+        return;
+
+      }
+
+
+
+      const diff = Math.abs(userAnswer - problem.correctAnswer);
+
+      if (diff <= problem.tolerance) {
+
+        inputEl.classList.remove('wrong');
+
+        inputEl.classList.add('correct');
+
+        resultEl.classList.remove('hidden');
+
+        resultEl.innerHTML = `<span class="text-green-600">✓ Дұрыс! Жауап: ${problem.correctAnswer}</span>`;
+
+      } else {
+
+        inputEl.classList.remove('correct');
+
+        inputEl.classList.add('wrong');
+
+        resultEl.classList.remove('hidden');
+
+        resultEl.innerHTML = `<span class="text-red-600">✗ Қате. Қайтадан көріңіз.</span>`;
+
+      }
+
+    };
+
+
+
+    window.showProblemSolution = function(id) {
+
+      const solEl = document.getElementById(`solution-${id}`);
+
+      solEl.classList.toggle('hidden');
+
+      if (window.MathJax) MathJax.typesetPromise();
+
+    };
+
+
+
     function handleContactSubmit(event) {
+
       event.preventDefault();
+
       const form = event.target;
+
       const btn = form.querySelector('button[type="submit"]');
+
       btn.disabled = true;
-      btn.innerHTML = '<span class="animate-pulse">Жіберілуде...</span>';
+
+      btn.innerHTML = 'Жіберілуде...';
+
       setTimeout(() => {
+
         btn.disabled = false;
+
         btn.textContent = 'Жіберу';
+
         document.getElementById('form-success').classList.remove('hidden');
+
         form.reset();
-        setTimeout(() => {
-          document.getElementById('form-success').classList.add('hidden');
-        }, 3000);
+
+        setTimeout(() => document.getElementById('form-success').classList.add('hidden'), 3000);
+
       }, 1500);
+
     }
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
+
+
+
+    window.onload = function() {
+
+      if (!document.getElementById('page-problems').classList.contains('hidden')) {
+
+        renderProblems();
+
       }
-    });
-    // Initial UI update
-    updateUI();
+
+    };
+
   </script>
+
 </body>
-                        </html>
+
+</html>
